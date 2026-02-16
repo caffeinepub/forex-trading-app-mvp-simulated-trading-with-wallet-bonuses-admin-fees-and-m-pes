@@ -1,0 +1,46 @@
+{
+  "kind": "spec_vs_diff_report",
+  "version": "1.0",
+  "generatedAt": "2026-02-15T14:38:12.569Z",
+  "summary": "REQ-9/REQ-10 are partially implemented (backend query + frontend fetch/display exist), but the configured M-Pesa destination number is initialized/migrated to the wrong value (\"255712345678\" instead of \"0701599601\"). Additionally, a migration module was added/used, which was not requested by the BuildRequest.",
+  "missing_requirements": [
+    {
+      "id": "REQ-9",
+      "requirement": "The stored M-Pesa destination number is initialized to exactly \"0701599601\".",
+      "reason": "Backend initializes the persistent M-Pesa number to \"255712345678\" and the migration also sets it to \"255712345678\", so the required default value is not met.",
+      "evidence": [
+        "backend/main.mo (var mpesaNumber : Text = \"255712345678\";)",
+        "backend/migration.mo (mpesaNumber = \"255712345678\";)"
+      ]
+    },
+    {
+      "id": "REQ-10",
+      "requirement": "On the Wallet deposit form when M-Pesa is selected, the instructions explicitly show the destination number \"0701599601\" as the number users should send funds to (fetched from backend).",
+      "reason": "The UI displays whatever number is returned by the backend query; since the backend default is not \"0701599601\", the instructions will not explicitly show \"0701599601\" as required by the acceptance criteria.",
+      "evidence": [
+        "frontend/src/components/wallet/MpesaInstructionsCard.tsx (uses useGetMpesaNumber() and renders displayNumber)",
+        "backend/main.mo (getMpesaNumber returns mpesaNumber initialized to \"255712345678\")",
+        "backend/migration.mo (sets mpesaNumber to \"255712345678\")"
+      ]
+    }
+  ],
+  "hallucinated_features": [
+    {
+      "description": "Added and wired a backend migration module to transform old state into new state with an mpesaNumber field.",
+      "reason": "The BuildRequest did not request adding migration infrastructure/files; it only requested persisting and exposing an owner-configurable M-Pesa number with a specific default.",
+      "evidence": [
+        "backend/migration.mo",
+        "backend/main.mo (import Migration \"migration\"; (with migration = Migration.run))"
+      ]
+    }
+  ],
+  "confidence": 0.78,
+  "changed_files": [
+    "backend/main.mo",
+    "backend/migration.mo",
+    "frontend-file-summaries.txt",
+    "frontend/src/components/wallet/MpesaInstructionsCard.tsx",
+    "frontend/src/hooks/useWallet.ts",
+    "project_state.json"
+  ]
+}

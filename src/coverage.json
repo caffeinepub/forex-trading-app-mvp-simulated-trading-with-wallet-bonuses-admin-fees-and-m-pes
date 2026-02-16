@@ -1,0 +1,54 @@
+{
+  "kind": "coverage_report",
+  "version": "1.0",
+  "generatedAt": "2026-02-15T14:38:12.572Z",
+  "sources": {
+    "buildRequest": true,
+    "implementationPlan": true
+  },
+  "requirements": {
+    "total": 2,
+    "implemented": 1,
+    "items": [
+      {
+        "id": "REQ-10",
+        "summary": "Update the wallet deposit M-Pesa instructions UI to display the configured destination number \"0701599601\" (from the backend query) in clear English, while keeping the flow manual (no M-Pesa API integration).",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/hooks/useWallet.ts",
+          "frontend/src/components/wallet/MpesaInstructionsCard.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/hooks/useWallet.ts",
+          "frontend/src/components/wallet/MpesaInstructionsCard.tsx"
+        ]
+      },
+      {
+        "id": "REQ-9",
+        "summary": "Persist an owner-configurable M-Pesa payment destination number in the backend and expose a query for the frontend to read it.",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
+      }
+    ]
+  },
+  "changedFiles": [
+    "backend/main.mo",
+    "backend/migration.mo",
+    "build-request.json",
+    "build-template/README.md",
+    "feature_evidence.json",
+    "frontend-file-summaries.txt",
+    "frontend-implementation-plan.json",
+    "frontend/src/backend.d.ts",
+    "frontend/src/backend.ts",
+    "frontend/src/components/wallet/MpesaInstructionsCard.tsx",
+    "frontend/src/declarations/backend.did.d.ts",
+    "frontend/src/declarations/backend.did.js",
+    "frontend/src/hooks/useWallet.ts",
+    "project_state.json",
+    "scratch/component-selection.json",
+    "spec.md",
+    "spec_vs_diff_report.json"
+  ]
+}

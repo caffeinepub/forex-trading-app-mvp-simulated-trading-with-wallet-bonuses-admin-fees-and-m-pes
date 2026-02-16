@@ -1,0 +1,28 @@
+{
+  "kind": "implementation_plan",
+  "version": "1.0",
+  "title": "Display configured M-Pesa destination number in wallet deposit instructions",
+  "requirements": [
+    {
+      "id": "REQ-10",
+      "summary": "Fetch the configured M-Pesa destination number from the backend and show it in the Wallet deposit M-Pesa instructions (manual review flow, English text).",
+      "acceptanceCriteria": [
+        "On the Wallet deposit form when M-Pesa is selected, the instructions explicitly show the destination number \"0701599601\" as the number users should send funds to.",
+        "The destination number displayed in the instructions is fetched from the backend (not hardcoded in the component).",
+        "All user-facing instruction text is in English and continues to state that deposits are manually reviewed/approved."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/hooks/useWallet.ts",
+          "operation": "modify",
+          "description": "Add a React Query hook (e.g., useGetMpesaNumber) that reads the configured destination number via the existing backend actor method getMpesaNumber(), with actor/isFetching gating consistent with other wallet queries."
+        },
+        {
+          "path": "frontend/src/components/wallet/MpesaInstructionsCard.tsx",
+          "operation": "modify",
+          "description": "Update the deposit instructions UI to call the new useGetMpesaNumber hook and render the fetched M-Pesa destination number in clear English (no M-Pesa API integration), while keeping the existing manual-review messaging; include loading/error-safe copy that still avoids hardcoding the number."
+        }
+      ]
+    }
+  ]
+}

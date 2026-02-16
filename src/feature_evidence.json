@@ -1,0 +1,25 @@
+{
+  "kind": "feature_evidence_report",
+  "features": [
+    {
+      "featureId": "feature-update-the-wallet-deposit-m-pesa-instructions-ui-to-display-the-configured-destination-number-0701599601-from-the-backend-query-in-clear-english-while-keeping-the-flow-manual-no-m-pesa-api-integration",
+      "featureTitle": "Update the wallet deposit M-Pesa instructions UI to display the configured destination number \"0701599601\" (from the backend query) in clear English, while keeping the flow manual (no M-Pesa API integration).",
+      "files": [
+        "frontend/src/components/wallet/MpesaInstructionsCard.tsx",
+        "frontend/src/hooks/useWallet.ts"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-10"
+      ],
+      "confidence": "high"
+    }
+  ]
+}

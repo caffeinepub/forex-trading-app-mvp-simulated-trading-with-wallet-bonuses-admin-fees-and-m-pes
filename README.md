@@ -1,2 +1,3 @@
-# forex-trading-app-mvp-simulated-trading-with-wallet-bonuses-admin-fees-and-m-pes
-Exported from Caffeine project: Forex Trading App MVP (Simulated Trading) with Wallet, Bonuses, Admin Fees, and M-Pesa Manual Deposit/Withdrawal
+## 
+
+To run app build and run docker image: `docker build -t app . docker run -it --network host app`
