@@ -1,131 +1,50 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 5,
-  "summary": "Build a forex trading app where users (including the owner) can trade, with deposit/withdrawal, bonuses, M-Pesa payments, and a monetization model where the app owner earns from users' trading activity.",
+  "projectStateVersion": 3,
+  "summary": "New project",
   "architectural_notes": [
-    "No guarantee of 100% profit/zero losses; trading involves risk and must include clear risk disclosures and regulatory compliance considerations.",
-    "Add configurable owner deposit payment details (e.g., M-Pesa phone number) shown in manual deposit instructions and used for admin verification of deposit references."
+    "App is deployed using hash-based routing (URLs require #/ to reach client-side routes)."
   ],
   "known_issues": [
-    "User requirement requests impossible performance guarantee (100% profit, zero losses); needs scope adjustment to realistic trading/risk model."
+    "User reports that the app page now loads, but they cannot log in or get started (login flow not functioning)."
   ],
-  "isFixRequest": false,
+  "isFixRequest": true,
   "existing_features": [
     {
-      "id": "feature-implement-internet-identity-sign-in-and-persist-a-user-profile-that-includes-role-admin-or-user-display-name-and-wallet-balance",
-      "title": "Implement Internet Identity sign-in and persist a user profile that includes role (admin or user), display name, and wallet balance.",
+      "id": "feature-fix-internet-identity-login-so-the-login-button-reliably-opens-the-internet-identity-provider-in-production-and-returns-an-authenticated-identity-to-the-app",
+      "title": "Fix Internet Identity login so the Login button reliably opens the Internet Identity provider in production and returns an authenticated identity to the app.",
       "reqIds": [
         "REQ-1"
       ],
       "version": 1
     },
     {
-      "id": "feature-create-a-simulated-forex-trading-engine-that-allows-users-to-open-close-trades-on-selectable-forex-pairs-with-clear-risk-disclosure-no-guaranteed-profit",
-      "title": "Create a simulated forex trading engine that allows users to open/close trades on selectable forex pairs with clear risk disclosure (no guaranteed profit).",
+      "id": "feature-update-the-get-started-start-trading-onboarding-behavior-so-unauthenticated-users-are-prompted-to-log-in-first-instead-of-being-navigated-to-an-authenticated-only-route-that-immediately-redirects-back-to-the-landing-page",
+      "title": "Update the \"Get Started\" / \"Start Trading\" onboarding behavior so unauthenticated users are prompted to log in first instead of being navigated to an authenticated-only route that immediately redirects back to the landing page.",
       "reqIds": [
         "REQ-2"
       ],
       "version": 1
     },
     {
-      "id": "feature-add-a-wallet-ledger-with-deposit-and-withdrawal-requests-including-statuses-pending-approved-rejected-and-an-admin-approval-workflow",
-      "title": "Add a wallet ledger with deposit and withdrawal requests, including statuses (Pending/Approved/Rejected) and an admin approval workflow.",
+      "id": "feature-improve-unauthenticated-gating-ux-on-authenticated-pages-trading-wallet-admin-so-users-see-a-clear-call-to-action-instead-of-a-blank-screen-while-being-redirected-or-blocked",
+      "title": "Improve unauthenticated gating UX on authenticated pages (Trading, Wallet, Admin) so users see a clear call-to-action instead of a blank screen while being redirected or blocked.",
       "reqIds": [
         "REQ-3"
       ],
       "version": 1
     },
     {
-      "id": "feature-support-an-m-pesa-payment-method-as-a-manual-flow-show-m-pesa-instructions-capture-transaction-reference-fields-and-route-requests-through-admin-review-no-direct-m-pesa-api-integration",
-      "title": "Support an M-Pesa payment method as a manual flow: show M-Pesa instructions, capture transaction reference fields, and route requests through admin review (no direct M-Pesa API integration).",
+      "id": "feature-make-login-and-onboarding-errors-observable-surface-internet-identity-login-errors-and-profile-creation-errors-to-the-user-in-the-ui-and-provide-a-simple-recovery-action-e-g-retry-login",
+      "title": "Make login and onboarding errors observable: surface Internet Identity login errors and profile creation errors to the user in the UI, and provide a simple recovery action (e.g., retry login).",
       "reqIds": [
         "REQ-4"
       ],
       "version": 1
-    },
-    {
-      "id": "feature-implement-a-bonus-system-that-can-grant-promotional-credits-e-g-deposit-bonus-with-admin-configurable-rules-and-clear-visibility-to-users",
-      "title": "Implement a bonus system that can grant promotional credits (e.g., deposit bonus) with admin-configurable rules and clear visibility to users.",
-      "reqIds": [
-        "REQ-5"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-an-owner-monetization-model-where-the-app-charges-trading-fees-e-g-per-trade-commission-or-spread-and-records-platform-revenue-separately-from-user-balances",
-      "title": "Add an owner monetization model where the app charges trading fees (e.g., per-trade commission or spread) and records platform revenue separately from user balances.",
-      "reqIds": [
-        "REQ-6"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-build-an-admin-dashboard-for-managing-users-reviewing-transactions-setting-simulated-market-prices-if-applicable-and-monitoring-trading-activity",
-      "title": "Build an admin dashboard for managing users, reviewing transactions, setting simulated market prices (if applicable), and monitoring trading activity.",
-      "reqIds": [
-        "REQ-7"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-create-a-coherent-extraordinary-visual-theme-not-blue-purple-and-apply-it-consistently-across-landing-trading-wallet-and-admin-pages-using-tailwind-shadcn-components",
-      "title": "Create a coherent, extraordinary visual theme (not blue/purple) and apply it consistently across landing, trading, wallet, and admin pages using Tailwind + shadcn components.",
-      "reqIds": [
-        "REQ-8"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-update-the-wallet-deposit-m-pesa-instructions-ui-to-display-the-configured-destination-number-0701599601-from-the-backend-query-in-clear-english-while-keeping-the-flow-manual-no-m-pesa-api-integration",
-      "title": "Update the wallet deposit M-Pesa instructions UI to display the configured destination number \"0701599601\" (from the backend query) in clear English, while keeping the flow manual (no M-Pesa API integration).",
-      "reqIds": [
-        "REQ-10"
-      ],
-      "version": 1
     }
   ],
-  "new_feature_requests": [
-    {
-      "id": "AR-1",
-      "summary": "Forex trading app with in-app trading functionality for all users (including admin/owner account)",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-2",
-      "summary": "Wallet and payments: deposits and withdrawals",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-3",
-      "summary": "Integrate M-Pesa for deposits/withdrawals",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-4",
-      "summary": "Bonus system (e.g., deposit bonus/promotions)",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-5",
-      "summary": "Monetization: app owner earns revenue from users trading (fees/commission/spread model)",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-6",
-      "summary": "Persist an owner-configurable M-Pesa payment destination number in the backend and expose a query for the frontend to read it.",
-      "reqIds": [
-        "REQ-9"
-      ],
-      "status": "pending"
-    }
-  ],
-  "gameProjectType": "none",
-  "projectName": "Forex Trading App MVP (Simulated Trading) with Wallet, Bonuses, Admin Fees, and M-Pesa Manual Deposit/Withdrawal",
+  "new_feature_requests": [],
+  "projectName": "Fix login and onboarding flow so users can log in and get started",
   "clarification_mode": "instant",
   "clarification_rounds": 0
 }

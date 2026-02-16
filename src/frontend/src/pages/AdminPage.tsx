@@ -1,116 +1,148 @@
 import { useInternetIdentity } from '../hooks/useInternetIdentity';
-import { useNavigate } from '@tanstack/react-router';
 import { useIsCallerAdmin } from '../hooks/useCurrentUser';
-import { useGetPlatformRevenue } from '../hooks/useFees';
-import { useGetAllTrades } from '../hooks/useTrading';
-import { TradeStatus } from '../backend';
-import AccessDeniedScreen from '../components/auth/AccessDeniedScreen';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { DollarSign, TrendingUp, Users } from 'lucide-react';
+import { Shield, DollarSign, TrendingUp, Users, Gift } from 'lucide-react';
 import DepositRequestsReview from '../components/admin/DepositRequestsReview';
 import BonusManagement from '../components/admin/BonusManagement';
 import RevenuePanel from '../components/admin/RevenuePanel';
 import TradingStatsPanel from '../components/admin/TradingStatsPanel';
 import UserDirectory from '../components/admin/UserDirectory';
+import AccessDeniedScreen from '../components/auth/AccessDeniedScreen';
+import AuthRequiredScreen from '../components/auth/AuthRequiredScreen';
+import CenteredLoadingCard from '../components/system/CenteredLoadingCard';
+import { setIntendedPath } from '../utils/postLoginRedirect';
 import { useEffect } from 'react';
 
 export default function AdminPage() {
   const { identity } = useInternetIdentity();
-  const navigate = useNavigate();
   const { data: isAdmin, isLoading } = useIsCallerAdmin();
-  const { data: revenue = 0 } = useGetPlatformRevenue();
-  const { data: allTrades = [] } = useGetAllTrades();
 
   const isAuthenticated = !!identity;
 
   useEffect(() => {
     if (!isAuthenticated) {
-      navigate({ to: '/' });
+      setIntendedPath('/admin');
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated]);
 
-  if (!isAuthenticated || isLoading) {
-    return null;
+  if (!isAuthenticated) {
+    return (
+      <AuthRequiredScreen 
+        title="Admin Login Required"
+        description="You need to log in to access the admin dashboard."
+      />
+    );
+  }
+
+  if (isLoading) {
+    return <CenteredLoadingCard message="Checking permissions..." />;
   }
 
   if (!isAdmin) {
     return <AccessDeniedScreen />;
   }
 
-  const openTrades = allTrades.filter(t => t.status === TradeStatus.open);
-  const uniqueUsers = new Set(allTrades.map(t => t.user.toString())).size;
-
   return (
     <div className="container py-8 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">Admin Dashboard</h1>
-          <p className="text-muted-foreground">Manage users, transactions, and platform settings</p>
-        </div>
-      </div>
-
-      {/* Admin Stats */}
-      <div className="grid md:grid-cols-3 gap-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Platform Revenue</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-primary">${revenue.toFixed(2)}</div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Traders</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{uniqueUsers}</div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Open Positions</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{openTrades.length}</div>
-          </CardContent>
-        </Card>
-      </div>
+      {/* Admin Header */}
+      <Card className="border-primary/20 bg-gradient-to-r from-primary/5 to-secondary/5 shadow-premium">
+        <CardHeader>
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-primary/10">
+              <Shield className="h-6 w-6 text-primary" />
+            </div>
+            <div>
+              <CardTitle className="text-2xl">Admin Dashboard</CardTitle>
+              <CardDescription>Manage platform operations and user accounts</CardDescription>
+            </div>
+          </div>
+        </CardHeader>
+      </Card>
 
       {/* Admin Tabs */}
       <Tabs defaultValue="deposits" className="w-full">
         <TabsList className="grid w-full grid-cols-5">
-          <TabsTrigger value="deposits">Deposits</TabsTrigger>
-          <TabsTrigger value="bonuses">Bonuses</TabsTrigger>
-          <TabsTrigger value="revenue">Revenue</TabsTrigger>
-          <TabsTrigger value="trading">Trading</TabsTrigger>
-          <TabsTrigger value="users">Users</TabsTrigger>
+          <TabsTrigger value="deposits" className="gap-2">
+            <DollarSign className="h-4 w-4" />
+            Deposits
+          </TabsTrigger>
+          <TabsTrigger value="bonuses" className="gap-2">
+            <Gift className="h-4 w-4" />
+            Bonuses
+          </TabsTrigger>
+          <TabsTrigger value="revenue" className="gap-2">
+            <TrendingUp className="h-4 w-4" />
+            Revenue
+          </TabsTrigger>
+          <TabsTrigger value="trading" className="gap-2">
+            <TrendingUp className="h-4 w-4" />
+            Trading
+          </TabsTrigger>
+          <TabsTrigger value="users" className="gap-2">
+            <Users className="h-4 w-4" />
+            Users
+          </TabsTrigger>
         </TabsList>
-        
+
         <TabsContent value="deposits" className="mt-6">
-          <DepositRequestsReview />
+          <Card className="border-border/50 shadow-premium">
+            <CardHeader>
+              <CardTitle>Deposit Requests</CardTitle>
+              <CardDescription>Review and approve pending deposit requests</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <DepositRequestsReview />
+            </CardContent>
+          </Card>
         </TabsContent>
-        
+
         <TabsContent value="bonuses" className="mt-6">
-          <BonusManagement />
+          <Card className="border-border/50 shadow-premium">
+            <CardHeader>
+              <CardTitle>Bonus Management</CardTitle>
+              <CardDescription>Apply bonuses to user accounts</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <BonusManagement />
+            </CardContent>
+          </Card>
         </TabsContent>
-        
+
         <TabsContent value="revenue" className="mt-6">
-          <RevenuePanel />
+          <Card className="border-border/50 shadow-premium">
+            <CardHeader>
+              <CardTitle>Platform Revenue</CardTitle>
+              <CardDescription>View total revenue and recent fees</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <RevenuePanel />
+            </CardContent>
+          </Card>
         </TabsContent>
-        
+
         <TabsContent value="trading" className="mt-6">
-          <TradingStatsPanel />
+          <Card className="border-border/50 shadow-premium">
+            <CardHeader>
+              <CardTitle>Trading Statistics</CardTitle>
+              <CardDescription>Platform-wide trading metrics</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <TradingStatsPanel />
+            </CardContent>
+          </Card>
         </TabsContent>
-        
+
         <TabsContent value="users" className="mt-6">
-          <UserDirectory />
+          <Card className="border-border/50 shadow-premium">
+            <CardHeader>
+              <CardTitle>User Directory</CardTitle>
+              <CardDescription>View and manage platform users</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <UserDirectory />
+            </CardContent>
+          </Card>
         </TabsContent>
       </Tabs>
     </div>

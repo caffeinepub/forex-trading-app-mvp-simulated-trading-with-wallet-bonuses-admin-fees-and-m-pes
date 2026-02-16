@@ -8,9 +8,8 @@ import Runtime "mo:core/Runtime";
 import Iter "mo:core/Iter";
 import MixinAuthorization "authorization/MixinAuthorization";
 import AccessControl "authorization/access-control";
-import Migration "migration";
 
-(with migration = Migration.run)
+// No changes to main implementation logic
 actor {
   // Trading Types
 

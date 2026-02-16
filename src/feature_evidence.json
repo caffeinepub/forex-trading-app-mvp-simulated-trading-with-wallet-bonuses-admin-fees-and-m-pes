@@ -2,11 +2,12 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-update-the-wallet-deposit-m-pesa-instructions-ui-to-display-the-configured-destination-number-0701599601-from-the-backend-query-in-clear-english-while-keeping-the-flow-manual-no-m-pesa-api-integration",
-      "featureTitle": "Update the wallet deposit M-Pesa instructions UI to display the configured destination number \"0701599601\" (from the backend query) in clear English, while keeping the flow manual (no M-Pesa API integration).",
+      "featureId": "feature-fix-internet-identity-login-so-the-login-button-reliably-opens-the-internet-identity-provider-in-production-and-returns-an-authenticated-identity-to-the-app",
+      "featureTitle": "Fix Internet Identity login so the Login button reliably opens the Internet Identity provider in production and returns an authenticated identity to the app.",
       "files": [
-        "frontend/src/components/wallet/MpesaInstructionsCard.tsx",
-        "frontend/src/hooks/useWallet.ts"
+        "frontend/src/components/auth/LoginButton.tsx",
+        "frontend/src/utils/authConfig.ts",
+        "frontend/src/utils/loginRecovery.ts"
       ],
       "components": [
         "authorization@4.0.0",
@@ -17,7 +18,72 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-10"
+        "REQ-1"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-update-the-get-started-start-trading-onboarding-behavior-so-unauthenticated-users-are-prompted-to-log-in-first-instead-of-being-navigated-to-an-authenticated-only-route-that-immediately-redirects-back-to-the-landing-page",
+      "featureTitle": "Update the \"Get Started\" / \"Start Trading\" onboarding behavior so unauthenticated users are prompted to log in first instead of being navigated to an authenticated-only route that immediately redirects back to the landing page.",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/pages/LandingPage.tsx",
+        "frontend/src/utils/postLoginRedirect.ts"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-2"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-improve-unauthenticated-gating-ux-on-authenticated-pages-trading-wallet-admin-so-users-see-a-clear-call-to-action-instead-of-a-blank-screen-while-being-redirected-or-blocked",
+      "featureTitle": "Improve unauthenticated gating UX on authenticated pages (Trading, Wallet, Admin) so users see a clear call-to-action instead of a blank screen while being redirected or blocked.",
+      "files": [
+        "frontend/src/components/auth/AuthRequiredScreen.tsx",
+        "frontend/src/components/system/CenteredLoadingCard.tsx",
+        "frontend/src/pages/AdminPage.tsx",
+        "frontend/src/pages/TradingPage.tsx",
+        "frontend/src/pages/WalletPage.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-3"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-make-login-and-onboarding-errors-observable-surface-internet-identity-login-errors-and-profile-creation-errors-to-the-user-in-the-ui-and-provide-a-simple-recovery-action-e-g-retry-login",
+      "featureTitle": "Make login and onboarding errors observable: surface Internet Identity login errors and profile creation errors to the user in the UI, and provide a simple recovery action (e.g., retry login).",
+      "files": [
+        "frontend/src/components/auth/AuthRequiredScreen.tsx",
+        "frontend/src/components/auth/LoginButton.tsx",
+        "frontend/src/components/auth/ProfileSetupDialog.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-4"
       ],
       "confidence": "high"
     }

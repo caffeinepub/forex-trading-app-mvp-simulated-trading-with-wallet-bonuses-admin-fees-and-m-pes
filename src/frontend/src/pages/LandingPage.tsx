@@ -1,14 +1,49 @@
-import { useNavigate } from '@tanstack/react-router';
 import { useInternetIdentity } from '../hooks/useInternetIdentity';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { TrendingUp, Wallet, Shield, AlertTriangle, ArrowRight } from 'lucide-react';
+import { TrendingUp, Wallet, Shield, AlertTriangle, ArrowRight, Sparkles, AlertCircle } from 'lucide-react';
+import { APP_NAME, APP_DESCRIPTION } from '../config/branding';
+import { setIntendedPath } from '../utils/postLoginRedirect';
+import { validateAuthConfig } from '../utils/authConfig';
+import { attemptLogin } from '../utils/loginRecovery';
+import { useState } from 'react';
 
 export default function LandingPage() {
-  const navigate = useNavigate();
-  const { identity } = useInternetIdentity();
+  const { identity, login, loginStatus } = useInternetIdentity();
+  const [loginError, setLoginError] = useState<string | null>(null);
+  
   const isAuthenticated = !!identity;
+  const isLoggingIn = loginStatus === 'logging-in';
+
+  const handleGetStarted = async () => {
+    if (isAuthenticated) {
+      // Already authenticated, navigate directly
+      window.location.hash = '#/trading';
+      return;
+    }
+
+    // Store intended destination
+    setIntendedPath('/trading');
+
+    // Validate configuration before attempting login
+    const configValidation = validateAuthConfig();
+    if (!configValidation.isValid) {
+      setLoginError(configValidation.errorMessage || 'Configuration error');
+      return;
+    }
+
+    setLoginError(null);
+    
+    // Attempt login
+    const result = await attemptLogin(async () => {
+      await login();
+    });
+
+    if (!result.success && result.error) {
+      setLoginError(result.error);
+    }
+  };
 
   const features = [
     {
@@ -31,70 +66,89 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-background via-accent/5 to-background">
-        <div className="container py-20 md:py-32">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+      <section className="relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-secondary/5" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,oklch(var(--primary)/0.15),transparent_50%),radial-gradient(circle_at_70%_60%,oklch(var(--secondary)/0.15),transparent_50%)]" />
+        
+        <div className="container relative py-24 md:py-36">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div className="space-y-8">
-              <div className="inline-block">
-                <span className="px-4 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium border border-primary/20">
-                  Simulated Trading Platform
-                </span>
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-primary/10 to-secondary/10 text-primary text-sm font-medium border border-primary/20 shadow-glow-subtle">
+                <Sparkles className="h-4 w-4" />
+                Simulated Trading Platform
               </div>
               
-              <h1 className="text-4xl md:text-6xl font-bold leading-tight">
+              <h1 className="text-5xl md:text-7xl font-bold leading-tight tracking-tight">
                 Master Forex Trading with{' '}
-                <span className="bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent">
-                  ForexPro
+                <span className="bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent bg-[length:200%_auto] animate-shimmer glow-text">
+                  {APP_NAME}
                 </span>
               </h1>
               
-              <p className="text-xl text-muted-foreground">
-                Experience simulated forex trading with real-time market dynamics. Perfect your strategy without financial risk.
+              <p className="text-xl md:text-2xl text-muted-foreground leading-relaxed">
+                {APP_DESCRIPTION}. Perfect your strategy without financial risk.
               </p>
 
-              <Alert variant="destructive" className="border-destructive/50 bg-destructive/5">
-                <AlertTriangle className="h-4 w-4" />
-                <AlertDescription className="font-medium">
+              <Alert variant="destructive" className="border-destructive/50 bg-destructive/5 backdrop-blur-sm">
+                <AlertTriangle className="h-5 w-5" />
+                <AlertDescription className="font-medium text-base">
                   <strong>Risk Disclaimer:</strong> Trading involves risk. This is a simulated platform for educational purposes. 
                   Profits are not guaranteed and past performance does not indicate future results.
                 </AlertDescription>
               </Alert>
 
-              <div className="flex flex-col sm:flex-row gap-4">
-                {isAuthenticated ? (
-                  <Button size="lg" onClick={() => navigate({ to: '/trading' })} className="gap-2 shadow-glow-gold">
-                    Start Trading
-                    <ArrowRight className="w-4 h-4" />
-                  </Button>
-                ) : (
-                  <Button size="lg" onClick={() => navigate({ to: '/trading' })} className="gap-2 shadow-glow-gold">
-                    Get Started
-                    <ArrowRight className="w-4 h-4" />
-                  </Button>
-                )}
+              {loginError && (
+                <Alert variant="destructive">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>
+                    {loginError}
+                  </AlertDescription>
+                </Alert>
+              )}
+
+              <div className="flex flex-col sm:flex-row gap-4 pt-2">
+                <Button 
+                  size="lg" 
+                  onClick={handleGetStarted}
+                  disabled={isLoggingIn}
+                  className="gap-2 shadow-premium text-base px-8 py-6 rounded-xl"
+                >
+                  {isLoggingIn ? 'Logging in...' : isAuthenticated ? 'Start Trading' : 'Get Started'}
+                  <ArrowRight className="w-5 h-5" />
+                </Button>
               </div>
             </div>
 
-            <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-tr from-primary/20 to-secondary/20 blur-3xl rounded-full" />
-              <img
-                src="/assets/generated/hero-illustration.dim_1600x900.png"
-                alt="Trading Dashboard"
-                className="relative rounded-lg shadow-2xl border border-border/50"
-              />
+            <div className="relative lg:block hidden">
+              <div className="absolute inset-0 bg-gradient-to-tr from-primary/30 to-secondary/30 blur-3xl rounded-full animate-pulse-glow" />
+              <div className="relative rounded-2xl overflow-hidden shadow-premium-lg border border-border/50 backdrop-blur-sm animate-float">
+                <img
+                  src="./assets/generated/hero-illustration.dim_1600x900.png"
+                  alt="Trading Dashboard"
+                  className="w-full h-auto"
+                />
+              </div>
+              <div className="absolute -bottom-8 -right-8 w-32 h-32 opacity-50">
+                <img
+                  src="./assets/generated/finance-icons.dim_1024x1024.png"
+                  alt="Finance Icons"
+                  className="w-full h-full object-contain animate-float"
+                  style={{ animationDelay: '1s' }}
+                />
+              </div>
             </div>
           </div>
         </div>
       </section>
 
       {/* Features Section */}
-      <section className="py-20 bg-card/30">
+      <section className="py-24 bg-gradient-to-b from-background to-card/30">
         <div className="container">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+          <div className="text-center mb-16 space-y-4">
+            <h2 className="text-4xl md:text-5xl font-bold tracking-tight">
               Everything You Need to Trade
             </h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
               A complete simulated trading platform with wallet management, bonuses, and admin controls
             </p>
           </div>
@@ -103,13 +157,16 @@ export default function LandingPage() {
             {features.map((feature, index) => {
               const Icon = feature.icon;
               return (
-                <Card key={index} className="border-border/50 hover:border-primary/50 transition-colors">
-                  <CardContent className="pt-6">
-                    <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
-                      <Icon className="w-6 h-6 text-primary" />
+                <Card 
+                  key={index} 
+                  className="border-border/50 hover:border-primary/50 transition-all duration-300 hover:shadow-premium group"
+                >
+                  <CardContent className="pt-8 pb-6 space-y-4">
+                    <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center group-hover:scale-110 transition-transform shadow-glow-subtle">
+                      <Icon className="w-7 h-7 text-primary" />
                     </div>
-                    <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
-                    <p className="text-muted-foreground">{feature.description}</p>
+                    <h3 className="text-xl font-semibold">{feature.title}</h3>
+                    <p className="text-muted-foreground leading-relaxed">{feature.description}</p>
                   </CardContent>
                 </Card>
               );
@@ -119,18 +176,25 @@ export default function LandingPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20">
+      <section className="py-24">
         <div className="container">
-          <Card className="bg-gradient-to-r from-primary/10 via-secondary/10 to-primary/10 border-primary/20">
-            <CardContent className="py-12 text-center">
-              <h2 className="text-3xl font-bold mb-4">Ready to Start Trading?</h2>
-              <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
-                Join ForexPro today and experience simulated forex trading with a professional platform
+          <Card className="relative overflow-hidden border-primary/20 shadow-premium-lg">
+            <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-secondary/10 to-primary/10" />
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,oklch(var(--primary)/0.1),transparent_70%)]" />
+            <CardContent className="relative py-16 text-center space-y-6">
+              <h2 className="text-4xl md:text-5xl font-bold tracking-tight">Ready to Start Trading?</h2>
+              <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+                Join {APP_NAME} today and experience simulated forex trading with a professional platform
               </p>
               {!isAuthenticated && (
-                <Button size="lg" onClick={() => navigate({ to: '/trading' })} className="gap-2">
-                  Login to Get Started
-                  <ArrowRight className="w-4 h-4" />
+                <Button 
+                  size="lg" 
+                  onClick={handleGetStarted}
+                  disabled={isLoggingIn}
+                  className="gap-2 shadow-premium text-base px-8 py-6 rounded-xl mt-4"
+                >
+                  {isLoggingIn ? 'Logging in...' : 'Login to Get Started'}
+                  <ArrowRight className="w-5 h-5" />
                 </Button>
               )}
             </CardContent>

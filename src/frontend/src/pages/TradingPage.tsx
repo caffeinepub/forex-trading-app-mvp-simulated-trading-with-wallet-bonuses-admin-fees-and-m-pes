@@ -1,5 +1,4 @@
 import { useInternetIdentity } from '../hooks/useInternetIdentity';
-import { useNavigate } from '@tanstack/react-router';
 import { useGetAvailableBalance } from '../hooks/useCurrentUser';
 import { useGetOpenTrades, useGetTradeHistory } from '../hooks/useTrading';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,12 +8,12 @@ import { AlertTriangle, TrendingUp, Wallet } from 'lucide-react';
 import TradeTicket from '../components/trading/TradeTicket';
 import OpenTradesTable from '../components/trading/OpenTradesTable';
 import TradeHistoryTable from '../components/trading/TradeHistoryTable';
-import { Button } from '@/components/ui/button';
+import AuthRequiredScreen from '../components/auth/AuthRequiredScreen';
+import { setIntendedPath } from '../utils/postLoginRedirect';
 import { useEffect } from 'react';
 
 export default function TradingPage() {
   const { identity } = useInternetIdentity();
-  const navigate = useNavigate();
   const { data: balance = 0 } = useGetAvailableBalance();
   const { data: openTrades = [] } = useGetOpenTrades();
   const { data: tradeHistory = [] } = useGetTradeHistory();
@@ -23,12 +22,17 @@ export default function TradingPage() {
 
   useEffect(() => {
     if (!isAuthenticated) {
-      navigate({ to: '/' });
+      setIntendedPath('/trading');
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated]);
 
   if (!isAuthenticated) {
-    return null;
+    return (
+      <AuthRequiredScreen 
+        title="Login Required"
+        description="You need to log in to access the trading platform."
+      />
+    );
   }
 
   const totalPnL = tradeHistory
@@ -38,7 +42,7 @@ export default function TradingPage() {
   return (
     <div className="container py-8 space-y-6">
       {/* Risk Disclaimer */}
-      <Alert variant="destructive" className="border-destructive/50 bg-destructive/5">
+      <Alert variant="destructive" className="border-destructive/50 bg-destructive/5 backdrop-blur-sm">
         <AlertTriangle className="h-4 w-4" />
         <AlertDescription>
           <strong>Risk Warning:</strong> Trading involves significant risk. This is a simulated trading platform. 
@@ -48,7 +52,7 @@ export default function TradingPage() {
 
       {/* Balance Overview */}
       <div className="grid md:grid-cols-3 gap-4">
-        <Card>
+        <Card className="border-border/50 hover:border-primary/30 transition-colors shadow-premium">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Available Balance</CardTitle>
             <Wallet className="h-4 w-4 text-muted-foreground" />
@@ -58,7 +62,7 @@ export default function TradingPage() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="border-border/50 hover:border-primary/30 transition-colors shadow-premium">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Open Positions</CardTitle>
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
@@ -68,7 +72,7 @@ export default function TradingPage() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="border-border/50 hover:border-primary/30 transition-colors shadow-premium">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total P&L</CardTitle>
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
@@ -88,33 +92,28 @@ export default function TradingPage() {
         </div>
 
         <div className="lg:col-span-2">
-          <Tabs defaultValue="open" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="open">Open Trades</TabsTrigger>
-              <TabsTrigger value="history">Trade History</TabsTrigger>
-            </TabsList>
-            <TabsContent value="open" className="mt-6">
-              <OpenTradesTable trades={openTrades} />
-            </TabsContent>
-            <TabsContent value="history" className="mt-6">
-              <TradeHistoryTable trades={tradeHistory} />
-            </TabsContent>
-          </Tabs>
+          <Card className="border-border/50 shadow-premium">
+            <CardHeader>
+              <CardTitle>Your Positions</CardTitle>
+              <CardDescription>Manage your open trades and view history</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Tabs defaultValue="open" className="w-full">
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="open">Open Trades ({openTrades.length})</TabsTrigger>
+                  <TabsTrigger value="history">History ({tradeHistory.length})</TabsTrigger>
+                </TabsList>
+                <TabsContent value="open" className="mt-4">
+                  <OpenTradesTable trades={openTrades} />
+                </TabsContent>
+                <TabsContent value="history" className="mt-4">
+                  <TradeHistoryTable trades={tradeHistory} />
+                </TabsContent>
+              </Tabs>
+            </CardContent>
+          </Card>
         </div>
       </div>
-
-      {balance === 0 && (
-        <Card className="border-primary/50 bg-primary/5">
-          <CardContent className="pt-6 text-center">
-            <p className="text-muted-foreground mb-4">
-              You need funds to start trading. Visit the wallet page to make a deposit.
-            </p>
-            <Button onClick={() => navigate({ to: '/wallet' })}>
-              Go to Wallet
-            </Button>
-          </CardContent>
-        </Card>
-      )}
     </div>
   );
 }

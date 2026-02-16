@@ -1,66 +1,92 @@
 {
   "kind": "build_request",
-  "title": "Configure M-Pesa owner payment number (0701599601) and display it in deposit instructions",
+  "title": "Fix login and onboarding flow so users can log in and get started",
   "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-9",
-      "text": "Persist an owner-configurable M-Pesa payment destination number in the backend and expose a query for the frontend to read it.",
-      "target": "backend",
-      "source": {
-        "messageIds": [
-          "msg-4"
-        ],
-        "quotes": [
-          "yes my number 0701599601  mode of payment M-pesa"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Backend stores an M-Pesa destination number value that can be used as the app’s deposit destination.",
-        "Backend provides a public query method that returns the current M-Pesa destination number for display in the UI.",
-        "The stored destination number is initialized to exactly \"0701599601\"."
-      ]
-    },
-    {
-      "id": "REQ-10",
-      "text": "Update the wallet deposit M-Pesa instructions UI to display the configured destination number \"0701599601\" (from the backend query) in clear English, while keeping the flow manual (no M-Pesa API integration).",
+      "id": "REQ-1",
+      "text": "Fix Internet Identity login so the Login button reliably opens the Internet Identity provider in production and returns an authenticated identity to the app.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-4"
+          "msg-1"
         ],
         "quotes": [
-          "yes my number 0701599601  mode of payment M-pesa"
+          "this one its working but i cant login or get started"
         ]
       },
       "acceptanceCriteria": [
-        "On the Wallet deposit form when M-Pesa is selected, the instructions explicitly show the destination number \"0701599601\" as the number users should send funds to.",
-        "The destination number displayed in the instructions is fetched from the backend (not hardcoded in the component).",
-        "All user-facing instruction text is in English and continues to state that deposits are manually reviewed/approved."
+        "Clicking the Login button opens the Internet Identity authorization flow (no silent failure).",
+        "After completing Internet Identity login, the app detects a non-anonymous identity (authenticated state becomes true).",
+        "If the Internet Identity provider URL is missing/misconfigured, the app shows a clear user-facing error message explaining that login cannot start due to configuration and does not get stuck in a loading state."
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "text": "Update the \"Get Started\" / \"Start Trading\" onboarding behavior so unauthenticated users are prompted to log in first instead of being navigated to an authenticated-only route that immediately redirects back to the landing page.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "this one its working but i cant login or get started"
+        ]
+      },
+      "acceptanceCriteria": [
+        "When not authenticated, clicking \"Get Started\" initiates login (or presents a clear login prompt) rather than navigating to /trading.",
+        "After successful login, the user is taken to the intended page (e.g., Trading) without manually re-clicking buttons.",
+        "No navigation loop occurs between /trading and / (landing) for unauthenticated users."
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "text": "Improve unauthenticated gating UX on authenticated pages (Trading, Wallet, Admin) so users see a clear call-to-action instead of a blank screen while being redirected or blocked.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "this one its working but i cant login or get started"
+        ]
+      },
+      "acceptanceCriteria": [
+        "If an unauthenticated user lands on /trading or /wallet, they see a clear message explaining that login is required, with a visible Login action.",
+        "If an unauthenticated user lands on /admin, they see a clear message explaining that login is required (and, if logged in but not admin, the existing access denied screen continues to be used).",
+        "No route returns an empty page (null) in a way that appears as a broken or blank UI to the user."
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "text": "Make login and onboarding errors observable: surface Internet Identity login errors and profile creation errors to the user in the UI, and provide a simple recovery action (e.g., retry login).",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "this one its working but i cant login or get started"
+        ]
+      },
+      "acceptanceCriteria": [
+        "If Internet Identity login fails, the user sees an error message in the UI (not only in the console) with a retry option.",
+        "If profile setup is required (no user profile exists after login), the profile setup dialog remains the path to continue, and any failures show an actionable error message.",
+        "After a successful profile creation, the dialog closes automatically (or is no longer shown) and the user can proceed to Trading/Wallet."
       ]
     }
   ],
   "constraints": [
-    "Backend must remain a single Motoko actor in backend/main.mo (no additional backend services).",
-    "Do not add any direct M-Pesa API integration; keep the payment flow manual with admin review.",
-    "Do not edit files under frontend/src/components/ui or other frontend immutable paths listed in SYSTEM_CONTEXT."
+    "Do not edit files in frontend/immutablePaths (frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, and frontend/src/components/ui). Compose new components or adjust other application code instead.",
+    "Backend must remain a single Motoko actor (all logic in backend/main.mo); only add migration code if persistent state schema changes are required."
   ],
   "nonGoals": [
-    "Implementing automatic M-Pesa STK push, callbacks, or real-time payment verification.",
-    "Changing the existing deposit request fields captured from the user (phone number and transaction code) beyond what is necessary to display the owner destination number."
+    "Implementing any third-party authentication providers other than Internet Identity.",
+    "Adding new trading, wallet, or admin features unrelated to fixing login/onboarding.",
+    "Introducing external databases or non-Motoko backend services."
   ],
   "imageRequirements": {
     "required": [],
     "edits": []
-  },
-  "userProfileUpdate": {
-    "goalsToAdd": [],
-    "goalsToRemove": [],
-    "preferencesToAdd": [],
-    "preferencesToRemove": [],
-    "miscToAdd": [],
-    "miscToRemove": [],
-    "fieldsToSet": {},
-    "fieldsToDelete": []
   }
 }
