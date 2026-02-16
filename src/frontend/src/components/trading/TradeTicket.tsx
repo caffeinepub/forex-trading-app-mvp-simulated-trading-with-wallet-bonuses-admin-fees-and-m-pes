@@ -18,13 +18,25 @@ const FOREX_PAIRS = [
   'NZD/USD'
 ];
 
-export default function TradeTicket() {
-  const [pair, setPair] = useState('EUR/USD');
+interface TradeTicketProps {
+  selectedPair?: string;
+  onPairChange?: (pair: string) => void;
+}
+
+export default function TradeTicket({ selectedPair, onPairChange }: TradeTicketProps) {
+  const [pair, setPair] = useState(selectedPair || 'EUR/USD');
   const [direction, setDirection] = useState<'buy' | 'sell'>('buy');
   const [leverage, setLeverage] = useState('10');
   const [margin, setMargin] = useState('100');
 
   const openTradeMutation = useOpenTrade();
+
+  const handlePairChange = (newPair: string) => {
+    setPair(newPair);
+    if (onPairChange) {
+      onPairChange(newPair);
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,7 +54,7 @@ export default function TradeTicket() {
   };
 
   return (
-    <Card>
+    <Card className="border-border/50 shadow-premium">
       <CardHeader>
         <CardTitle>Open Trade</CardTitle>
         <CardDescription>Enter your trade parameters</CardDescription>
@@ -51,7 +63,7 @@ export default function TradeTicket() {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="pair">Currency Pair</Label>
-            <Select value={pair} onValueChange={setPair}>
+            <Select value={pair} onValueChange={handlePairChange}>
               <SelectTrigger id="pair">
                 <SelectValue />
               </SelectTrigger>
@@ -113,6 +125,7 @@ export default function TradeTicket() {
               step="0.01"
               value={margin}
               onChange={(e) => setMargin(e.target.value)}
+              placeholder="Enter margin"
               required
             />
           </div>

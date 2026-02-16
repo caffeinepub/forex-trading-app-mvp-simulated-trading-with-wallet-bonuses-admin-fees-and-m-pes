@@ -2,12 +2,11 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-fix-internet-identity-login-so-the-login-button-reliably-opens-the-internet-identity-provider-in-production-and-returns-an-authenticated-identity-to-the-app",
-      "featureTitle": "Fix Internet Identity login so the Login button reliably opens the Internet Identity provider in production and returns an authenticated identity to the app.",
+      "featureId": "feature-trigger-a-fresh-rebuild-and-redeploy-of-the-existing-app-frontend-backend-without-introducing-product-changes-since-the-last-deployment-did-not-complete-successfully",
+      "featureTitle": "Trigger a fresh rebuild and redeploy of the existing app (frontend + backend) without introducing product changes, since the last deployment did not complete successfully.",
       "files": [
-        "frontend/src/components/auth/LoginButton.tsx",
-        "frontend/src/utils/authConfig.ts",
-        "frontend/src/utils/loginRecovery.ts"
+        "frontend/ops/redeploy-runbook.md",
+        "frontend/ops/redeploy.sh"
       ],
       "components": [
         "authorization@4.0.0",
@@ -23,12 +22,11 @@
       "confidence": "high"
     },
     {
-      "featureId": "feature-update-the-get-started-start-trading-onboarding-behavior-so-unauthenticated-users-are-prompted-to-log-in-first-instead-of-being-navigated-to-an-authenticated-only-route-that-immediately-redirects-back-to-the-landing-page",
-      "featureTitle": "Update the \"Get Started\" / \"Start Trading\" onboarding behavior so unauthenticated users are prompted to log in first instead of being navigated to an authenticated-only route that immediately redirects back to the landing page.",
+      "featureId": "feature-after-redeploy-run-the-documented-smoke-tests-to-confirm-the-deployment-is-healthy-landing-page-hash-based-routing-internet-identity-login-and-core-authenticated-routes",
+      "featureTitle": "After redeploy, run the documented smoke tests to confirm the deployment is healthy (landing page, hash-based routing, Internet Identity login, and core authenticated routes).",
       "files": [
-        "frontend/src/App.tsx",
-        "frontend/src/pages/LandingPage.tsx",
-        "frontend/src/utils/postLoginRedirect.ts"
+        "frontend/ops/smoke-test-checklist.md",
+        "frontend/ops/smoke-test-report-template.md"
       ],
       "components": [
         "authorization@4.0.0",
@@ -40,50 +38,6 @@
       ],
       "testIds": [
         "REQ-2"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-improve-unauthenticated-gating-ux-on-authenticated-pages-trading-wallet-admin-so-users-see-a-clear-call-to-action-instead-of-a-blank-screen-while-being-redirected-or-blocked",
-      "featureTitle": "Improve unauthenticated gating UX on authenticated pages (Trading, Wallet, Admin) so users see a clear call-to-action instead of a blank screen while being redirected or blocked.",
-      "files": [
-        "frontend/src/components/auth/AuthRequiredScreen.tsx",
-        "frontend/src/components/system/CenteredLoadingCard.tsx",
-        "frontend/src/pages/AdminPage.tsx",
-        "frontend/src/pages/TradingPage.tsx",
-        "frontend/src/pages/WalletPage.tsx"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-3"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-make-login-and-onboarding-errors-observable-surface-internet-identity-login-errors-and-profile-creation-errors-to-the-user-in-the-ui-and-provide-a-simple-recovery-action-e-g-retry-login",
-      "featureTitle": "Make login and onboarding errors observable: surface Internet Identity login errors and profile creation errors to the user in the UI, and provide a simple recovery action (e.g., retry login).",
-      "files": [
-        "frontend/src/components/auth/AuthRequiredScreen.tsx",
-        "frontend/src/components/auth/LoginButton.tsx",
-        "frontend/src/components/auth/ProfileSetupDialog.tsx"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-4"
       ],
       "confidence": "high"
     }

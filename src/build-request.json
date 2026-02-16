@@ -1,89 +1,54 @@
 {
   "kind": "build_request",
-  "title": "Fix login and onboarding flow so users can log in and get started",
+  "title": "Retry build and redeploy after deployment error",
   "priority": "normal",
   "requirements": [
     {
       "id": "REQ-1",
-      "text": "Fix Internet Identity login so the Login button reliably opens the Internet Identity provider in production and returns an authenticated identity to the app.",
-      "target": "frontend",
+      "text": "Trigger a fresh rebuild and redeploy of the existing app (frontend + backend) without introducing product changes, since the last deployment did not complete successfully.",
+      "target": "unknown",
       "source": {
         "messageIds": [
-          "msg-1"
+          "msg-6"
         ],
         "quotes": [
-          "this one its working but i cant login or get started"
+          "yes"
         ]
       },
       "acceptanceCriteria": [
-        "Clicking the Login button opens the Internet Identity authorization flow (no silent failure).",
-        "After completing Internet Identity login, the app detects a non-anonymous identity (authenticated state becomes true).",
-        "If the Internet Identity provider URL is missing/misconfigured, the app shows a clear user-facing error message explaining that login cannot start due to configuration and does not get stuck in a loading state."
+        "A new deployment completes without errors and produces a working canister-hosted URL.",
+        "The deployed app loads successfully at the root route (/) in a new browser session."
       ]
     },
     {
       "id": "REQ-2",
-      "text": "Update the \"Get Started\" / \"Start Trading\" onboarding behavior so unauthenticated users are prompted to log in first instead of being navigated to an authenticated-only route that immediately redirects back to the landing page.",
-      "target": "frontend",
+      "text": "After redeploy, run the documented smoke tests to confirm the deployment is healthy (landing page, hash-based routing, Internet Identity login, and core authenticated routes).",
+      "target": "unknown",
       "source": {
         "messageIds": [
-          "msg-1"
+          "msg-6"
         ],
         "quotes": [
-          "this one its working but i cant login or get started"
+          "yes"
         ]
       },
       "acceptanceCriteria": [
-        "When not authenticated, clicking \"Get Started\" initiates login (or presents a clear login prompt) rather than navigating to /trading.",
-        "After successful login, the user is taken to the intended page (e.g., Trading) without manually re-clicking buttons.",
-        "No navigation loop occurs between /trading and / (landing) for unauthenticated users."
-      ]
-    },
-    {
-      "id": "REQ-3",
-      "text": "Improve unauthenticated gating UX on authenticated pages (Trading, Wallet, Admin) so users see a clear call-to-action instead of a blank screen while being redirected or blocked.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-1"
-        ],
-        "quotes": [
-          "this one its working but i cant login or get started"
-        ]
-      },
-      "acceptanceCriteria": [
-        "If an unauthenticated user lands on /trading or /wallet, they see a clear message explaining that login is required, with a visible Login action.",
-        "If an unauthenticated user lands on /admin, they see a clear message explaining that login is required (and, if logged in but not admin, the existing access denied screen continues to be used).",
-        "No route returns an empty page (null) in a way that appears as a broken or blank UI to the user."
-      ]
-    },
-    {
-      "id": "REQ-4",
-      "text": "Make login and onboarding errors observable: surface Internet Identity login errors and profile creation errors to the user in the UI, and provide a simple recovery action (e.g., retry login).",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-1"
-        ],
-        "quotes": [
-          "this one its working but i cant login or get started"
-        ]
-      },
-      "acceptanceCriteria": [
-        "If Internet Identity login fails, the user sees an error message in the UI (not only in the console) with a retry option.",
-        "If profile setup is required (no user profile exists after login), the profile setup dialog remains the path to continue, and any failures show an actionable error message.",
-        "After a successful profile creation, the dialog closes automatically (or is no longer shown) and the user can proceed to Trading/Wallet."
+        "Landing page (/) loads and hard refresh does not show a 404/Not Found.",
+        "Hash-based routes (/#/trading, /#/wallet, /#/admin) open directly and still work after hard refresh.",
+        "Internet Identity login completes and returns to the app successfully.",
+        "Authenticated pages (/trading and /wallet) render without runtime errors; admin page is accessible only for admin users.",
+        "No missing static assets (e.g., favicon/logo) and no critical console errors during the smoke test run."
       ]
     }
   ],
   "constraints": [
-    "Do not edit files in frontend/immutablePaths (frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, and frontend/src/components/ui). Compose new components or adjust other application code instead.",
-    "Backend must remain a single Motoko actor (all logic in backend/main.mo); only add migration code if persistent state schema changes are required."
+    "Do not edit files under frontend/src/components/ui (read-only Shadcn UI components).",
+    "Do not modify files listed in SYSTEM_CONTEXT.frontend.immutablePaths.",
+    "Respect the single-actor backend architecture (all Motoko logic in backend/main.mo); only add backend/migration.mo if a state migration is required."
   ],
   "nonGoals": [
-    "Implementing any third-party authentication providers other than Internet Identity.",
-    "Adding new trading, wallet, or admin features unrelated to fixing login/onboarding.",
-    "Introducing external databases or non-Motoko backend services."
+    "Implementing new product features unrelated to completing a successful redeploy.",
+    "Refactoring existing trading, wallet, or admin functionality unless required to resolve the deployment failure."
   ],
   "imageRequirements": {
     "required": [],

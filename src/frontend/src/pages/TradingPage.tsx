@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useInternetIdentity } from '../hooks/useInternetIdentity';
 import { useGetAvailableBalance } from '../hooks/useCurrentUser';
 import { useGetOpenTrades, useGetTradeHistory } from '../hooks/useTrading';
@@ -6,6 +7,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { AlertTriangle, TrendingUp, Wallet } from 'lucide-react';
 import TradeTicket from '../components/trading/TradeTicket';
+import CandlestickChart from '../components/trading/CandlestickChart';
 import OpenTradesTable from '../components/trading/OpenTradesTable';
 import TradeHistoryTable from '../components/trading/TradeHistoryTable';
 import AuthRequiredScreen from '../components/auth/AuthRequiredScreen';
@@ -17,6 +19,7 @@ export default function TradingPage() {
   const { data: balance = 0 } = useGetAvailableBalance();
   const { data: openTrades = [] } = useGetOpenTrades();
   const { data: tradeHistory = [] } = useGetTradeHistory();
+  const [selectedPair, setSelectedPair] = useState('EUR/USD');
 
   const isAuthenticated = !!identity;
 
@@ -85,10 +88,13 @@ export default function TradingPage() {
         </Card>
       </div>
 
+      {/* Candlestick Chart */}
+      <CandlestickChart pair={selectedPair} />
+
       {/* Trading Interface */}
       <div className="grid lg:grid-cols-3 gap-6">
         <div className="lg:col-span-1">
-          <TradeTicket />
+          <TradeTicket selectedPair={selectedPair} onPairChange={setSelectedPair} />
         </div>
 
         <div className="lg:col-span-2">

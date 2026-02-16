@@ -1,12 +1,10 @@
 # Specification
 
 ## Summary
-**Goal:** Fix Internet Identity login and onboarding so users can reliably authenticate, get started, and understand what to do when login/profile setup fails.
+**Goal:** Complete a fresh rebuild and redeploy of the existing app after the previous deployment failed, then verify the deployment is healthy via smoke tests.
 
 **Planned changes:**
-- Make the Login button reliably launch the Internet Identity authorization flow in production and ensure the app transitions to an authenticated (non-anonymous) state after successful login.
-- Add clear, user-facing error handling when Internet Identity configuration is missing/misconfigured or when the login flow fails, including a retry action and no stuck loading state.
-- Update “Get Started / Start Trading” so unauthenticated users are prompted to log in (or login is initiated), then redirected to the intended destination (e.g., Trading) after login without navigation loops.
-- Improve gating UX on authenticated routes (Trading, Wallet, Admin) to show a clear “login required” message and Login action instead of blank/broken screens; preserve existing access denied behavior for non-admin users who are logged in.
+- Trigger a new build and redeploy for both frontend and backend without introducing product/feature changes.
+- Run the documented smoke tests post-deploy (landing page, hash-based routing, Internet Identity login, and core authenticated routes) and confirm no missing assets or critical console errors.
 
-**User-visible outcome:** Users can click Login and successfully authenticate via Internet Identity, unauthenticated users are guided to log in before entering Trading/Wallet/Admin, and any login/onboarding/profile errors are shown in the UI with clear next steps.
+**User-visible outcome:** The app is reachable via a working canister-hosted URL, loads correctly at `/`, supports direct navigation to hash routes (including after hard refresh), and allows successful Internet Identity login with authenticated pages functioning as expected.

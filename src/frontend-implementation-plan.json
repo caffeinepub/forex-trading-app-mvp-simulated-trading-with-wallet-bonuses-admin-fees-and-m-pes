@@ -1,119 +1,58 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Stabilize Internet Identity login and onboarding navigation",
+  "title": "Redeploy runbook + smoke-test verification for existing ForexPro app",
   "requirements": [
     {
       "id": "REQ-1",
-      "summary": "Make Internet Identity login initiation reliable and user-observable, including handling missing/misconfigured provider URL without silent failure.",
+      "summary": "Provide a repeatable, no-product-change procedure to trigger a fresh rebuild and redeploy, plus post-deploy checks focused on canister-safe routing and static assets.",
       "acceptanceCriteria": [
-        "Clicking the Login button opens the Internet Identity authorization flow (no silent failure).",
-        "After completing Internet Identity login, the app detects a non-anonymous identity (authenticated state becomes true).",
-        "If the Internet Identity provider URL is missing/misconfigured, the app shows a clear user-facing error message explaining that login cannot start due to configuration and does not get stuck in a loading state."
+        "A new deployment completes without errors and produces a working canister-hosted URL.",
+        "The deployed app loads successfully at the root route (/) in a new browser session."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/components/auth/LoginButton.tsx",
+          "path": "frontend/ops/redeploy-runbook.md",
           "operation": "modify",
-          "description": "Update the existing Login button UX to surface Internet Identity start/login failures in the UI (not only console), including a preflight check for a missing/misconfigured Internet Identity provider URL (using the same env value used by the auth hook) and a clear retry action. Use the selected \"authorization\" component guidance for login/logout behavior and cache clearing; verify the component's usage instructions before implementing."
+          "description": "Tighten the redeploy procedure to be explicitly “no code/product changes”, add a clear preflight checklist (hash routing, relative asset paths, root route), and add an explicit post-deploy verification section aligned to canister-hosted behavior (hard refresh, deep links)."
         },
         {
-          "path": "frontend/src/utils/authConfig.ts",
+          "path": "frontend/ops/redeploy.sh",
           "operation": "create",
-          "description": "Add a small utility to read and validate the Internet Identity provider configuration (e.g., presence of the provider URL) and return a user-friendly error message when misconfigured, to avoid silent failures across multiple UI entry points."
+          "description": "Add an ops helper script that runs the documented clean rebuild + redeploy sequence and prints the expected next manual verification steps (kept non-invasive; does not alter product behavior)."
         },
         {
-          "path": "frontend/src/utils/loginRecovery.ts",
-          "operation": "create",
-          "description": "Add a helper that wraps calling `login()` with optional timeout-based recovery (e.g., if login stays in a loading state too long) and returns a UI-safe error message plus a retry function for consistent behavior across buttons and gated screens."
+          "path": "frontend/index.html",
+          "operation": "modify",
+          "description": "Verify canister-safe, relative asset references (favicon + module script) remain relative and resilient to redeploys; adjust only if required to prevent missing assets at runtime."
         }
       ]
     },
     {
       "id": "REQ-2",
-      "summary": "Change landing-page onboarding actions so unauthenticated users are prompted to log in first and are returned to the intended authenticated page after login.",
+      "summary": "Ensure the documented smoke tests cover landing, hash-based routing, Internet Identity login, and core authenticated routes (including admin-only access) after redeploy.",
       "acceptanceCriteria": [
-        "When not authenticated, clicking \"Get Started\" initiates login (or presents a clear login prompt) rather than navigating to /trading.",
-        "After successful login, the user is taken to the intended page (e.g., Trading) without manually re-clicking buttons.",
-        "No navigation loop occurs between /trading and / (landing) for unauthenticated users."
+        "Landing page (/) loads and hard refresh does not show a 404/Not Found.",
+        "Hash-based routes (/#/trading, /#/wallet, /#/admin) open directly and still work after hard refresh.",
+        "Internet Identity login completes and returns to the app successfully.",
+        "Authenticated pages (/trading and /wallet) render without runtime errors; admin page is accessible only for admin users.",
+        "No missing static assets (e.g., favicon/logo) and no critical console errors during the smoke test run."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/utils/postLoginRedirect.ts",
-          "operation": "create",
-          "description": "Implement session-based storage helpers for an intended route (e.g., set/get/clear an \"intendedPath\") so onboarding and gated pages can request navigation after authentication."
+          "path": "frontend/ops/smoke-test-checklist.md",
+          "operation": "modify",
+          "description": "Align the checklist wording and pass/fail criteria directly to the acceptance criteria: (1) root route + hard refresh, (2) direct hash deep-links for trading/wallet/admin + hard refresh, (3) Internet Identity login roundtrip, (4) authenticated route rendering checks, (5) admin-only access verification, and (6) static asset + console error checks."
         },
         {
-          "path": "frontend/src/pages/LandingPage.tsx",
-          "operation": "modify",
-          "description": "Update the unauthenticated \"Get Started\" and CTA buttons to initiate Internet Identity login instead of navigating to /trading, while recording the intended destination (e.g., /trading) via the post-login redirect utility. Use the selected \"authorization\" component guidance for login initiation patterns; verify the component's usage instructions before implementing."
+          "path": "frontend/ops/smoke-test-report-template.md",
+          "operation": "create",
+          "description": "Add a lightweight smoke test report template (deployment URL, environment, tester, results per section, and captured console errors) to standardize post-redeploy validation outcomes."
         },
         {
           "path": "frontend/src/App.tsx",
           "operation": "modify",
-          "description": "Add a top-level post-login redirect effect: when identity becomes authenticated, if an intended destination is stored, navigate there and clear the stored intent. Ensure this works alongside the existing profile setup gating so users do not need to re-click onboarding buttons after login."
-        }
-      ]
-    },
-    {
-      "id": "REQ-3",
-      "summary": "Replace blank/redirect behavior on authenticated routes with a clear login-required call-to-action (Trading, Wallet, Admin) without changing protected/admin behavior when logged in.",
-      "acceptanceCriteria": [
-        "If an unauthenticated user lands on /trading or /wallet, they see a clear message explaining that login is required, with a visible Login action.",
-        "If an unauthenticated user lands on /admin, they see a clear message explaining that login is required (and, if logged in but not admin, the existing access denied screen continues to be used).",
-        "No route returns an empty page (null) in a way that appears as a broken or blank UI to the user."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/components/auth/AuthRequiredScreen.tsx",
-          "operation": "create",
-          "description": "Create a reusable login-required screen component (message + clear Login action + optional secondary action to go back home) for use on authenticated-only routes. Use the selected \"authorization\" component guidance for auth gating UX; verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/components/system/CenteredLoadingCard.tsx",
-          "operation": "create",
-          "description": "Add a small centered loading UI component to use on pages that previously returned null during intermediate auth/role checks, avoiding blank screens."
-        },
-        {
-          "path": "frontend/src/pages/TradingPage.tsx",
-          "operation": "modify",
-          "description": "Remove the unauthenticated redirect-to-home + `return null` behavior. Instead, when unauthenticated, render AuthRequiredScreen and (optionally) set the post-login intended path to /trading so login returns the user to this page."
-        },
-        {
-          "path": "frontend/src/pages/WalletPage.tsx",
-          "operation": "modify",
-          "description": "Remove the unauthenticated redirect-to-home + `return null` behavior. Instead, when unauthenticated, render AuthRequiredScreen and (optionally) set the post-login intended path to /wallet so login returns the user to this page."
-        },
-        {
-          "path": "frontend/src/pages/AdminPage.tsx",
-          "operation": "modify",
-          "description": "Replace unauthenticated redirect + null return with AuthRequiredScreen, and replace the `isLoading` null return with a visible centered loading UI. Preserve existing AccessDeniedScreen behavior for authenticated-but-not-admin users."
-        }
-      ]
-    },
-    {
-      "id": "REQ-4",
-      "summary": "Surface login and onboarding/profile setup errors in the UI with retry/recovery actions and ensure profile creation completes the onboarding path.",
-      "acceptanceCriteria": [
-        "If Internet Identity login fails, the user sees an error message in the UI (not only in the console) with a retry option.",
-        "If profile setup is required (no user profile exists after login), the profile setup dialog remains the path to continue, and any failures show an actionable error message.",
-        "After a successful profile creation, the dialog closes automatically (or is no longer shown) and the user can proceed to Trading/Wallet."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/components/auth/ProfileSetupDialog.tsx",
-          "operation": "modify",
-          "description": "Enhance the profile setup dialog to show mutation errors inline (actionable message + clear retry/try-again affordance) in addition to any toast, and ensure successful profile creation reliably causes the dialog to disappear by triggering the existing profile query refresh. Use the selected \"authorization\" component guidance for profile setup flow; verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/components/auth/AuthRequiredScreen.tsx",
-          "operation": "modify",
-          "description": "Integrate observable login error handling on gated screens (e.g., show Internet Identity login error state and provide a retry login action) by consuming the auth context error/status. Use the selected \"authorization\" component guidance for error handling and retry patterns; verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/components/auth/LoginButton.tsx",
-          "operation": "modify",
-          "description": "Extend the Login button to display auth-context error state (e.g., `loginStatus === 'loginError'` / `loginError`) in a user-facing way and provide a one-click retry action, ensuring users can recover from failed login attempts without refreshing. Use the selected \"authorization\" component guidance for error handling; verify the component's usage instructions before implementing."
+          "description": "Add/adjust minimal, non-feature-changing safeguards to keep smoke-test paths reliable (hash-based routing remains configured; not-found handling remains wired) and ensure any future regressions to routing behavior are less likely to slip through."
         }
       ]
     }

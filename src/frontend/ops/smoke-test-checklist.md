@@ -1,295 +1,366 @@
 # ForexPro Smoke Test Checklist
 
 ## Purpose
-This checklist provides a repeatable set of smoke tests to verify core functionality after a redeploy or rebuild of the ForexPro application.
+This checklist provides a comprehensive set of manual verification steps to validate that a deployed ForexPro application is functioning correctly on the Internet Computer canister infrastructure.
 
-## Pre-Test Setup
-- [ ] Clear browser cache and cookies
-- [ ] Open browser developer console
-- [ ] Note the deployment URL
-- [ ] Prepare test credentials (Internet Identity)
+## Test Environment Information
 
-## Test 1: Landing Page Load
-**Objective**: Verify the landing page renders correctly at root URL
+**Deployment URL:** `_______________________________`  
+**Canister ID:** `_______________________________`  
+**Network:** ☐ Local  ☐ IC Mainnet  
+**Tester:** `_______________________________`  
+**Date/Time:** `_______________________________`  
+**Browser:** `_______________________________`  
+**Browser Version:** `_______________________________`
 
-### Steps
-1. Navigate to the root URL (/)
-2. Wait for page to fully load
-3. Hard refresh the page (Ctrl+Shift+R or Cmd+Shift+R)
-4. Verify page loads again without errors
+---
 
-### Expected Results
-- [ ] Page loads without errors on first visit
-- [ ] Page loads without errors after hard refresh
-- [ ] No "Not Found" or 404 error displayed
-- [ ] Hero section displays with "Master Forex Trading with Eugene FX" heading
-- [ ] Risk disclaimer alert is visible
-- [ ] Three feature cards are displayed (Simulated Trading, Wallet Management, Secure Platform)
-- [ ] Hero illustration image loads correctly
-- [ ] Finance icons image loads correctly
-- [ ] App logo in header loads correctly
-- [ ] "Get Started" or "Start Trading" button is visible
-- [ ] Footer displays with Caffeine.ai attribution
-- [ ] No console errors
+## Test 1: Root URL Load & Hard Refresh
 
-## Test 2: Navigation and Header
-**Objective**: Verify header navigation and responsive menu
+**Objective:** Verify the landing page loads correctly at the root URL and survives hard refresh.
 
-### Steps
-1. Check header elements
-2. Test navigation links (if authenticated)
-3. Test mobile menu (resize browser or use mobile device)
+**Steps:**
+1. Open a new incognito/private browser window
+2. Navigate to the deployment URL (root path, no hash)
+3. Verify the landing page loads completely
+4. Perform a hard refresh (Ctrl+Shift+R / Cmd+Shift+R)
+5. Verify the page reloads without 404 or blank screen
 
-### Expected Results
-- [ ] Eugene FX logo and name display in header
-- [ ] Logo image loads correctly (no broken image)
-- [ ] Login button is visible and clickable
-- [ ] Share button (copy link icon) is visible in header
-- [ ] Navigation links appear for authenticated users (Trading, Wallet, Admin)
-- [ ] Mobile menu icon appears on small screens
-- [ ] Mobile menu opens and displays navigation options
-- [ ] Current route is highlighted in navigation
+**Expected Results:**
+- Landing page displays with hero section
+- "Get Started" button is visible
+- App logo and branding appear correctly
+- No 404 errors or blank screens
+- Hard refresh reloads the same content
 
-## Test 3: Internet Identity Sign-In
-**Objective**: Verify authentication flow works correctly
+**Pass/Fail:** ☐ Pass  ☐ Fail  
+**Notes:** `_______________________________`
 
-### Steps
-1. Click "Login" button in header
-2. Complete Internet Identity authentication
-3. Return to application after authentication
+---
 
-### Expected Results
-- [ ] Login button triggers Internet Identity flow
-- [ ] Internet Identity window/tab opens
-- [ ] User can authenticate with existing identity or create new one
-- [ ] After authentication, user returns to ForexPro
-- [ ] Login button changes to "Logout" with user indicator
-- [ ] Profile setup dialog appears for first-time users
-- [ ] Navigation menu shows authenticated routes (Trading, Wallet)
+## Test 2: Static Asset Loading
 
-## Test 4: Profile Setup (First-Time Users)
-**Objective**: Verify profile setup dialog for new users
+**Objective:** Verify all static assets load correctly from canister storage.
 
-### Steps
-1. After first login, profile setup dialog should appear
-2. Enter a display name
-3. Submit the form
+**Steps:**
+1. Open browser DevTools (F12)
+2. Navigate to the Network tab
+3. Reload the page
+4. Check for any failed requests (red status codes)
+5. Verify favicon appears in browser tab
+6. Verify app logo appears in header
 
-### Expected Results
-- [ ] Profile setup dialog appears automatically
-- [ ] Dialog cannot be dismissed without completing setup
-- [ ] Display name input field is present and functional
-- [ ] "Get Started" button is enabled when name is entered
-- [ ] Form submits successfully
-- [ ] Success toast notification appears
-- [ ] Dialog closes after successful submission
-- [ ] User can now access authenticated pages
+**Expected Results:**
+- Favicon loads successfully (200 status)
+- App logo image loads successfully (200 status)
+- No 404 errors for any assets
+- All images render correctly
 
-## Test 5: Trading Page Access
-**Objective**: Verify trading page loads and displays correctly
+**Pass/Fail:** ☐ Pass  ☐ Fail  
+**Notes:** `_______________________________`
 
-### Steps
-1. Navigate to /trading (click Trading in navigation)
-2. Wait for page to load
+---
 
-### Expected Results
-- [ ] Trading page loads without errors
-- [ ] Balance overview card displays
-- [ ] Available balance is shown (may be 0 for new users)
-- [ ] Trade ticket form is visible with forex pair selector
-- [ ] Open trades section is present
-- [ ] Trade history tabs are visible
-- [ ] Risk warning is displayed
-- [ ] No console errors
+## Test 3: Console Error Check
 
-## Test 6: Wallet Page and M-Pesa Number Query
-**Objective**: Verify wallet page loads and M-Pesa destination number is fetched
+**Objective:** Verify no critical JavaScript errors occur during initial load.
 
-### Steps
-1. Navigate to /wallet (click Wallet in navigation)
-2. Wait for page to load
-3. Locate M-Pesa instructions card
+**Steps:**
+1. Open browser DevTools Console tab
+2. Reload the page
+3. Review all console messages
+4. Look for red error messages
+5. Check for any failed network requests
 
-### Expected Results
-- [ ] Wallet page loads without errors
-- [ ] Balance overview card displays
-- [ ] Deposit form is visible
-- [ ] Withdraw form is visible
-- [ ] M-Pesa instructions card is present
-- [ ] M-Pesa destination number is displayed (fetched from backend)
-- [ ] Transaction history section is visible
-- [ ] No console errors during M-Pesa number fetch
+**Expected Results:**
+- No critical JavaScript errors (red messages)
+- No unhandled promise rejections
+- No failed API calls during initial load
+- Warning messages (yellow) are acceptable if non-critical
 
-### Backend Query Verification
-- [ ] Network tab shows successful query to `getMpesaNumber`
-- [ ] M-Pesa number displays in format: "255712345678" (or configured number)
-- [ ] No authentication errors in console
+**Pass/Fail:** ☐ Pass  ☐ Fail  
+**Notes:** `_______________________________`
 
-## Test 7: Admin Page Access (Admin Users Only)
-**Objective**: Verify admin page is accessible for admin users
+---
 
-### Steps
-1. Navigate to /admin (click Admin in navigation, if visible)
-2. Wait for page to load
+## Test 4: Navigation - Trading Route
 
-### Expected Results
-- [ ] Admin page loads without errors (for admin users)
-- [ ] Platform statistics are displayed
-- [ ] Tabs for different admin functions are visible
-- [ ] Deposit requests review panel is present
-- [ ] Bonus management panel is accessible
-- [ ] Revenue panel displays
-- [ ] User directory is available
-- [ ] Non-admin users see access denied or cannot access route
+**Objective:** Verify hash-based navigation to the trading page works correctly.
 
-## Test 8: Logout Flow
-**Objective**: Verify logout clears session and cache
+**Steps:**
+1. From the landing page, click "Get Started" or navigate to `/#/trading`
+2. Verify the trading page loads (may show login prompt if not authenticated)
+3. Perform a hard refresh (Ctrl+Shift+R / Cmd+Shift+R)
+4. Verify the trading page reloads correctly
 
-### Steps
-1. Click "Logout" button in header
-2. Confirm logout action
-3. Verify state after logout
+**Expected Results:**
+- Trading page loads or shows authentication required screen
+- URL contains `/#/trading` hash
+- Hard refresh maintains the trading page view
+- No 404 errors or blank screens
 
-### Expected Results
-- [ ] Logout button triggers logout process
-- [ ] User is logged out successfully
-- [ ] Login button reappears in header
-- [ ] Authenticated routes are no longer accessible
-- [ ] Query cache is cleared
-- [ ] Redirected to landing page or current page updates
-- [ ] No console errors
+**Pass/Fail:** ☐ Pass  ☐ Fail  
+**Notes:** `_______________________________`
 
-## Test 9: Cross-Route Navigation
-**Objective**: Verify navigation between routes works smoothly
+---
 
-### Steps
-1. Navigate between different routes multiple times
-2. Use both navigation menu and direct URL entry
-3. Test browser back/forward buttons
+## Test 5: Navigation - Wallet Route
 
-### Expected Results
-- [ ] All routes load correctly
-- [ ] No blank screens or loading states that never resolve
-- [ ] Browser back/forward buttons work correctly
-- [ ] Route transitions are smooth
-- [ ] Active route is highlighted in navigation
-- [ ] No memory leaks or performance degradation
+**Objective:** Verify hash-based navigation to the wallet page works correctly.
 
-## Test 10: Canister Deep-Link Verification (CRITICAL)
-**Objective**: Verify direct links and refresh work on canister-hosted deployment
+**Steps:**
+1. Navigate to `/#/wallet` directly in the address bar
+2. Verify the wallet page loads (may show login prompt if not authenticated)
+3. Perform a hard refresh
+4. Verify the wallet page reloads correctly
 
-### Steps
-1. While authenticated, navigate to /trading
-2. Click the "Copy app link" button (share icon in header)
-3. Verify the copied URL format in clipboard
-4. Open a new browser tab
-5. Paste the copied URL and press Enter
-6. Verify the trading page loads correctly
-7. Hard refresh the page (Ctrl+Shift+R or Cmd+Shift+R)
-8. Verify the page still loads correctly after refresh
-9. Repeat steps 1-8 for /wallet route
-10. Repeat steps 1-8 for /admin route (if admin user)
-11. Navigate to root (/) and hard refresh multiple times
+**Expected Results:**
+- Wallet page loads or shows authentication required screen
+- URL contains `/#/wallet` hash
+- Hard refresh maintains the wallet page view
+- No 404 errors or blank screens
 
-### Expected Results
-- [ ] Copy link button successfully copies URL to clipboard
-- [ ] Copied URL includes hash-based routing format (e.g., https://example.com/#/trading)
-- [ ] Pasting URL in new tab loads the correct page (not 404 or landing page)
-- [ ] Trading page displays correctly from direct link
-- [ ] Hard refresh on /trading does not break routing or show "Not Found"
-- [ ] Wallet page displays correctly from direct link
-- [ ] Hard refresh on /wallet does not break routing or show "Not Found"
-- [ ] Admin page displays correctly from direct link (for admin users)
-- [ ] Hard refresh on /admin does not break routing or show "Not Found"
-- [ ] Root URL (/) loads landing page consistently
-- [ ] Hard refresh on root (/) continues to load landing page (no "Not Found")
-- [ ] All pages maintain authentication state after refresh
-- [ ] No console errors related to routing or navigation
-- [ ] All static assets (logo, images) load correctly after refresh
+**Pass/Fail:** ☐ Pass  ☐ Fail  
+**Notes:** `_______________________________`
 
-### Canister URL Format Verification
-- [ ] URLs use hash-based routing: `https://<canister-id>.ic0.app/#/route`
-- [ ] No server-side path routing attempted (no `/route` without `#`)
-- [ ] Browser history navigation (back/forward) works correctly with hash routing
-- [ ] Asset paths are relative (./assets/...) not absolute (/assets/...)
+---
+
+## Test 6: Navigation - Admin Route
+
+**Objective:** Verify hash-based navigation to the admin page works correctly.
+
+**Steps:**
+1. Navigate to `/#/admin` directly in the address bar
+2. Verify the admin page loads (may show login prompt or access denied)
+3. Perform a hard refresh
+4. Verify the admin page reloads correctly
+
+**Expected Results:**
+- Admin page loads, shows authentication required, or shows access denied
+- URL contains `/#/admin` hash
+- Hard refresh maintains the admin page view
+- No 404 errors or blank screens
+
+**Pass/Fail:** ☐ Pass  ☐ Fail  
+**Notes:** `_______________________________`
+
+---
+
+## Test 7: Internet Identity Login Flow
+
+**Objective:** Verify Internet Identity authentication completes successfully.
+
+**Steps:**
+1. Navigate to the landing page
+2. Click the "Login" button
+3. Complete Internet Identity authentication flow
+4. Verify successful return to the app
+5. Check that login status changes to "Logout"
+
+**Expected Results:**
+- Internet Identity modal/window opens
+- Authentication completes without errors
+- User returns to the app successfully
+- Login button changes to "Logout" button
+- User identity is established
+
+**Pass/Fail:** ☐ Pass  ☐ Fail  
+**Notes:** `_______________________________`
+
+---
+
+## Test 8: Profile Setup (First Login)
+
+**Objective:** Verify profile setup dialog appears for new users.
+
+**Steps:**
+1. Complete login with a new Internet Identity
+2. Verify profile setup dialog appears
+3. Enter a display name
+4. Submit the profile
+5. Verify dialog closes and profile is saved
+
+**Expected Results:**
+- Profile setup dialog appears automatically
+- Name input field is functional
+- Submit button works correctly
+- Dialog closes after successful submission
+- User can proceed to use the app
+
+**Pass/Fail:** ☐ Pass  ☐ Fail  ☐ N/A (existing user)  
+**Notes:** `_______________________________`
+
+---
+
+## Test 9: Authenticated Route Access - Trading Page
+
+**Objective:** Verify authenticated users can access and use the trading page.
+
+**Steps:**
+1. Ensure you are logged in
+2. Navigate to `/#/trading`
+3. Verify the trading page renders completely
+4. Check that balance overview is visible
+5. Verify trade ticket form is functional
+6. Check that candlestick chart renders
+
+**Expected Results:**
+- Trading page loads without errors
+- Balance information displays
+- Trade ticket form is interactive
+- Candlestick chart renders with data
+- No runtime errors in console
+
+**Pass/Fail:** ☐ Pass  ☐ Fail  
+**Notes:** `_______________________________`
+
+---
+
+## Test 10: Canister Deep-Link Verification
+
+**Objective:** Verify that deep links to hash routes work correctly when accessed directly from external sources.
+
+**Steps:**
+1. Copy the full canister URL with a hash route (e.g., `https://{canister-id}.ic0.app/#/trading`)
+2. Open a new incognito/private browser window
+3. Paste and navigate to the copied URL
+4. Verify the correct page loads
+5. Repeat for root URL without hash (`https://{canister-id}.ic0.app/`)
+6. Verify landing page loads correctly
+
+**Expected Results:**
+- Direct hash route URLs load the correct page
+- Root URL loads the landing page
+- No 404 errors or blank screens
+- Authentication prompts appear if required
+- All routes are accessible via direct URL entry
+
+**Pass/Fail:** ☐ Pass  ☐ Fail  
+**Notes:** `_______________________________`
+
+---
 
 ## Test 11: Unknown Route Handling
-**Objective**: Verify unknown routes show proper 404 page
 
-### Steps
-1. Navigate to a non-existent route (e.g., /#/does-not-exist)
-2. Verify the not found page displays
+**Objective:** Verify that navigating to an unknown route displays the 404 page.
+
+**Steps:**
+1. Navigate to an invalid hash route (e.g., `/#/nonexistent-page`)
+2. Verify the 404 Not Found page displays
 3. Click "Return to Home" button
+4. Verify navigation back to landing page works
 
-### Expected Results
-- [ ] Unknown route shows in-app "Page Not Found" screen
-- [ ] Not found page displays with proper styling
-- [ ] "Return to Home" button is visible and functional
-- [ ] Clicking "Return to Home" navigates to landing page
-- [ ] No console errors
-- [ ] No blank screen or infinite loading
+**Expected Results:**
+- 404 page displays for unknown routes
+- "Page Not Found" message is visible
+- "Return to Home" button is functional
+- Navigation back to home works correctly
 
-## Test 12: Error Handling
-**Objective**: Verify error states are handled gracefully
+**Pass/Fail:** ☐ Pass  ☐ Fail  
+**Notes:** `_______________________________`
 
-### Steps
-1. Test with network throttling or offline mode
-2. Attempt actions that might fail
-3. Check error messages and recovery
+---
 
-### Expected Results
-- [ ] Network errors show appropriate messages
-- [ ] Failed queries display error states
-- [ ] Toast notifications appear for errors
-- [ ] Application remains functional after errors
-- [ ] User can retry failed actions
-- [ ] No unhandled promise rejections in console
+## Test 12: Authenticated Route Access - Wallet Page
 
-## Post-Test Verification
+**Objective:** Verify authenticated users can access and use the wallet page.
 
-### Console Check
-- [ ] No critical errors in browser console
-- [ ] No unhandled promise rejections
-- [ ] No React warnings about keys or hooks
-- [ ] No CORS or network errors
-- [ ] No 404 errors for assets
+**Steps:**
+1. Ensure you are logged in
+2. Navigate to `/#/wallet`
+3. Verify the wallet page renders completely
+4. Check that balance overview is visible
+5. Verify deposit and withdraw forms are functional
+6. Check that transaction history displays
 
-### Performance Check
-- [ ] Page load times are acceptable (< 3 seconds)
-- [ ] No excessive re-renders
-- [ ] Smooth animations and transitions
-- [ ] Responsive on different screen sizes
+**Expected Results:**
+- Wallet page loads without errors
+- Balance information displays
+- Deposit form is interactive
+- Withdraw form is interactive
+- Transaction history table renders
+- M-Pesa instructions are visible
 
-### Data Integrity
-- [ ] User profile persists across sessions
-- [ ] Balance data is consistent
-- [ ] Transaction history displays correctly
-- [ ] Admin data is accurate (for admin users)
+**Pass/Fail:** ☐ Pass  ☐ Fail  
+**Notes:** `_______________________________`
 
-## Test Summary
-**Date**: _____________  
-**Tester**: _____________  
-**Deployment URL**: _____________  
-**Overall Result**: ☐ Pass ☐ Fail ☐ Pass with Issues
+---
 
-### Issues Found
-1. _____________________________________________
-2. _____________________________________________
-3. _____________________________________________
+## Test 13: Admin-Only Access Control
 
-### Notes
-_____________________________________________
-_____________________________________________
-_____________________________________________
+**Objective:** Verify that admin page is accessible only to admin users.
 
-## Sign-Off
-- [ ] All critical tests passed
-- [ ] Root URL (/) loads consistently without "Not Found"
-- [ ] Hard refresh works on all routes
-- [ ] Deep-link and refresh tests passed on canister deployment
-- [ ] All static assets load correctly
-- [ ] Known issues documented
-- [ ] Deployment approved for production use
+**Steps:**
+1. Log in as a non-admin user
+2. Navigate to `/#/admin`
+3. Verify access denied screen appears
+4. Log out and log in as an admin user
+5. Navigate to `/#/admin`
+6. Verify admin dashboard loads correctly
 
-**Approved by**: _____________  
-**Date**: _____________
+**Expected Results:**
+- Non-admin users see "Access Denied" screen
+- Admin users can access the admin dashboard
+- Admin dashboard displays platform stats
+- Management tabs are functional
+- No unauthorized access is possible
+
+**Pass/Fail:** ☐ Pass  ☐ Fail  ☐ N/A (no admin account)  
+**Notes:** `_______________________________`
+
+---
+
+## Test 14: Logout Functionality
+
+**Objective:** Verify logout clears authentication and returns to landing page.
+
+**Steps:**
+1. Ensure you are logged in
+2. Click the "Logout" button
+3. Verify logout completes successfully
+4. Check that login button reappears
+5. Verify navigation to authenticated routes shows login prompt
+
+**Expected Results:**
+- Logout completes without errors
+- "Logout" button changes to "Login" button
+- User is redirected appropriately
+- Authenticated routes require re-login
+- Query cache is cleared
+
+**Pass/Fail:** ☐ Pass  ☐ Fail  
+**Notes:** `_______________________________`
+
+---
+
+## Test 15: Responsive Design Check
+
+**Objective:** Verify the app is responsive and works on mobile devices.
+
+**Steps:**
+1. Open browser DevTools
+2. Toggle device emulation (mobile view)
+3. Test navigation on mobile viewport
+4. Verify mobile menu works correctly
+5. Check that forms are usable on mobile
+
+**Expected Results:**
+- Layout adapts to mobile viewport
+- Mobile menu (hamburger) appears and functions
+- All interactive elements are accessible
+- Forms are usable on touch devices
+- No horizontal scrolling issues
+
+**Pass/Fail:** ☐ Pass  ☐ Fail  
+**Notes:** `_______________________________`
+
+---
+
+## Overall Test Summary
+
+**Total Tests:** 15  
+**Passed:** `_______`  
+**Failed:** `_______`  
+**N/A:** `_______`
+
+**Critical Issues Found:**
