@@ -1,17 +1,20 @@
 import Map "mo:core/Map";
 import Text "mo:core/Text";
 import Array "mo:core/Array";
-import List "mo:core/List";
 import Time "mo:core/Time";
 import Principal "mo:core/Principal";
 import Runtime "mo:core/Runtime";
 import Iter "mo:core/Iter";
 import MixinAuthorization "authorization/MixinAuthorization";
 import AccessControl "authorization/access-control";
+import Nat "mo:core/Nat";
+import Float "mo:core/Float";
+import Int "mo:core/Int";
 
-// No changes to main implementation logic
+
+
 actor {
-  // Trading Types
+  //////////////////////// Types ////////////////////////
 
   public type ForexPair = {
     baseCurrency : Text;
@@ -89,8 +92,6 @@ actor {
     walletBalance : Float;
   };
 
-  //////////////////// Map initialization //////////////////////
-
   let trades = Map.empty<Nat, TradePosition>();
   let balances = Map.empty<Principal, AccountBalance>();
   let deposits = Map.empty<Nat, DepositRequest>();
@@ -98,14 +99,12 @@ actor {
   let fees = Map.empty<Nat, TradingFee>();
   let userProfiles = Map.empty<Principal, UserProfile>();
 
-  // Access Control & Authorization
   let accessControlState = AccessControl.initState();
   include MixinAuthorization(accessControlState);
 
-  // Persistent M-Pesa Destination Number
   var mpesaNumber : Text = "255712345678";
 
-  public query ({ caller }) func getMpesaNumber() : async Text {
+  public query func getMpesaNumber() : async Text {
     mpesaNumber;
   };
 
@@ -115,8 +114,6 @@ actor {
     };
     mpesaNumber := newNumber;
   };
-
-  //////////////////// User Profile Management //////////////////////
 
   public query ({ caller }) func getCallerUserProfile() : async ?UserProfile {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
@@ -158,41 +155,154 @@ actor {
     Text.fromArray(quoteChars);
   };
 
+  type Quotes = {
+    quoteEURUSD : Float;
+    quoteUSDJPY : Float;
+    quoteGBPUSD : Float;
+    quoteUSDCHF : Float;
+    lastUpdate : Time.Time;
+  };
+
+  let quotes : Quotes = {
+    quoteEURUSD = 1.05;
+    quoteUSDJPY = 150.50;
+    quoteGBPUSD = 1.23;
+    quoteUSDCHF = 0.92;
+    lastUpdate = Time.now();
+  };
+
+  public query func getEurUsdPrice() : async Float {
+    quotes.quoteEURUSD;
+  };
+
+  public query func getUsdJpyPrice() : async Float {
+    quotes.quoteUSDJPY;
+  };
+
+  public query func getGbpUsdPrice() : async Float {
+    quotes.quoteGBPUSD;
+  };
+
+  public query func getUsdChfPrice() : async Float {
+    quotes.quoteUSDCHF;
+  };
+
+  public query func getQuote(symbol : Text) : async Float {
+    let symbolEnum : ?Symbol = switch (symbol) {
+      case ("EUR/USD") { ?#eurUsd };
+      case ("USD/JPY") { ?#usdJpy };
+      case ("GBP/USD") { ?#gbpUsd };
+      case ("USD/CHF") { ?#usdChf };
+      case (_) { null };
+    };
+
+    switch (symbolEnum) {
+      case (null) { 0.0 };
+      case (?validSymbol) { getCurrentMarketQuote(validSymbol) };
+    };
+  };
+
+  public type Symbol = {
+    #eurUsd;
+    #usdJpy;
+    #gbpUsd;
+    #usdChf;
+  };
+
+  func getCurrentMarketQuote(symbol : Symbol) : Float {
+    let timeNs = Time.now();
+    let minFpRate = 0.0001;
+    let maxFpRate = 0.0005;
+    let variationRange = maxFpRate - minFpRate;
+    let timeFactor = (Int.abs(timeNs % 10_000_000_000).toNat() / 100_000_000).toFloat() / 10.0;
+    let variation = minFpRate + variationRange * timeFactor;
+
+    switch (symbol) {
+      case (#eurUsd) {
+        1.05 + variation * 10000.0;
+      };
+      case (#usdJpy) { 150.50 + variation * 100.0 };
+      case (#gbpUsd) { 1.23 + variation * 10000.0 };
+      case (#usdChf) { 0.92 + variation * 10000.0 };
+    };
+  };
+
   public shared ({ caller }) func openTrade(
     pairSymbol : Text,
     direction : TradeDirection,
     leverage : Nat,
-    margin : Float
+    margin : Float,
   ) : async TradePosition {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can open trades");
     };
 
-    tradeCounter += 1;
-    let tradeId = tradeCounter;
-
-    let trade : TradePosition = {
-      tradeId;
-      user = caller;
-      forexPair = {
-        baseCurrency = getBaseCurrency(pairSymbol);
-        quoteCurrency = getQuoteCurrency(pairSymbol);
-        symbol = pairSymbol;
-      };
-      direction;
-      leverage;
-      margin;
-      openPrice = 20.0;
-      closePrice = null;
-      profitLoss = null;
-      openTimestamp = Time.now();
-      closeTimestamp = null;
-      status = #open;
-      platformFee = 2.0;
+    let symbolEnum : ?Symbol = switch (pairSymbol) {
+      case ("EUR/USD") { ?#eurUsd };
+      case ("USD/JPY") { ?#usdJpy };
+      case ("GBP/USD") { ?#gbpUsd };
+      case ("USD/CHF") { ?#usdChf };
+      case (_) { null };
     };
 
-    trades.add(tradeId, trade);
-    trade;
+    switch (symbolEnum) {
+      case (null) {
+        Runtime.trap("Invalid forex pair symbol");
+      };
+      case (?validSymbol) {
+        let availableBalance = switch (balances.get(caller)) {
+          case (null) { 0.0 };
+          case (?balance) { balance.available };
+        };
+        if (availableBalance < margin) {
+          Runtime.trap("Insufficient balance for margin");
+        };
+
+        tradeCounter += 1;
+        let tradeId = tradeCounter;
+
+        let trade : TradePosition = {
+          tradeId;
+          user = caller;
+          forexPair = {
+            baseCurrency = getBaseCurrency(pairSymbol);
+            quoteCurrency = getQuoteCurrency(pairSymbol);
+            symbol = pairSymbol;
+          };
+          direction;
+          leverage;
+          margin;
+          openPrice = getCurrentMarketQuote(validSymbol);
+          closePrice = null;
+          profitLoss = null;
+          openTimestamp = Time.now();
+          closeTimestamp = null;
+          status = #open;
+          platformFee = 2.0;
+        };
+
+        let currentBalance = switch (balances.get(caller)) {
+          case (null) {
+            {
+              available = 0.0;
+              lockedMargin = 0.0;
+              totalEquity = 0.0;
+            };
+          };
+          case (?bal) { bal };
+        };
+
+        let newBalance = {
+          currentBalance with
+          available = currentBalance.available - margin;
+          lockedMargin = currentBalance.lockedMargin + margin;
+        };
+
+        balances.add(caller, newBalance);
+        trades.add(tradeId, trade);
+        trade;
+      };
+    };
   };
 
   public shared ({ caller }) func closeTrade(tradeId : Nat) : async TradePosition {
@@ -214,13 +324,47 @@ actor {
           Runtime.trap("Unauthorized: Cannot close another user's trade");
         };
 
+        let executionPrice = getCurrentMarketQuote(getSymbolForTrade(trade.forexPair));
+        let profitLoss = calculateProfitLoss(
+          trade.openPrice,
+          executionPrice,
+          trade.margin,
+          trade.leverage,
+          trade.direction,
+        );
+
         finalTrade := ?{
           trade with
-          closePrice = ?45.0;
-          profitLoss = ?(-167.0);
+          closePrice = ?executionPrice;
+          profitLoss = ?profitLoss;
           closeTimestamp = ?Time.now();
           status = #closed;
         };
+
+        let currentBalance = switch (balances.get(trade.user)) {
+          case (null) {
+            {
+              available = 0.0;
+              lockedMargin = 0.0;
+              totalEquity = 0.0;
+            };
+          };
+          case (?bal) { bal };
+        };
+
+        let releasedMargin = currentBalance.lockedMargin - trade.margin;
+        let newAvailable = currentBalance.available + trade.margin + profitLoss;
+        let newTotalEquity = newAvailable + releasedMargin;
+
+        balances.add(
+          trade.user,
+          {
+            currentBalance with
+            available = newAvailable;
+            lockedMargin = releasedMargin;
+            totalEquity = newTotalEquity;
+          },
+        );
       };
     };
 
@@ -231,6 +375,32 @@ actor {
         tradeResult;
       };
     };
+  };
+
+  func getSymbolForTrade(forexPair : ForexPair) : Symbol {
+    switch (forexPair.symbol) {
+      case ("EUR/USD") { #eurUsd };
+      case ("USD/JPY") { #usdJpy };
+      case ("GBP/USD") { #gbpUsd };
+      case ("USD/CHF") { #usdChf };
+      case (_) { #eurUsd };
+    };
+  };
+
+  func calculateProfitLoss(
+    openPrice : Float,
+    closePrice : Float,
+    margin : Float,
+    leverage : Nat,
+    direction : TradeDirection,
+  ) : Float {
+    let positionSize = margin * leverage.toFloat();
+    let priceChange = switch (direction) {
+      case (#buy) { closePrice - openPrice };
+      case (#sell) { openPrice - closePrice };
+    };
+
+    positionSize * priceChange;
   };
 
   public query ({ caller }) func getOpenTrades() : async [TradePosition] {
@@ -322,7 +492,6 @@ actor {
 
         deposits.add(requestId, updatedDeposit);
 
-        // Update user balance
         let currentBalance = switch (balances.get(deposit.user)) {
           case (null) {
             {
@@ -334,11 +503,17 @@ actor {
           case (?bal) { bal };
         };
 
-        balances.add(deposit.user, {
-          currentBalance with
-          available = deposit.amount;
-          totalEquity = deposit.amount;
-        });
+        let newAvailable = currentBalance.available + deposit.amount;
+        let newTotalEquity = newAvailable + currentBalance.lockedMargin;
+
+        balances.add(
+          deposit.user,
+          {
+            currentBalance with
+            available = newAvailable;
+            totalEquity = newTotalEquity;
+          },
+        );
 
         updatedDeposit;
       };
@@ -389,7 +564,6 @@ actor {
 
     bonuses.add(bonusCounter, bonus);
 
-    // Update user balance
     let currentBalance = switch (balances.get(targetUser)) {
       case (null) {
         {
@@ -401,11 +575,17 @@ actor {
       case (?bal) { bal };
     };
 
-    balances.add(targetUser, {
-      currentBalance with
-      available = amount;
-      totalEquity = amount;
-    });
+    let newAvailable = currentBalance.available + amount;
+    let newTotalEquity = newAvailable + currentBalance.lockedMargin;
+
+    balances.add(
+      targetUser,
+      {
+        currentBalance with
+        available = newAvailable;
+        totalEquity = newTotalEquity;
+      },
+    );
 
     bonus;
   };
@@ -451,6 +631,17 @@ actor {
       Runtime.trap("Unauthorized: Only users can submit trading fees");
     };
 
+    switch (trades.get(tradeId)) {
+      case (null) {
+        Runtime.trap("Trade does not exist.");
+      };
+      case (?trade) {
+        if (trade.user != caller and not AccessControl.isAdmin(accessControlState, caller)) {
+          Runtime.trap("Unauthorized: Cannot submit fee for another user's trade");
+        };
+      };
+    };
+
     feeCounter += 1;
     let tradingFee : TradingFee = {
       feeId = feeCounter;
@@ -489,4 +680,3 @@ actor {
     totalRevenue;
   };
 };
-

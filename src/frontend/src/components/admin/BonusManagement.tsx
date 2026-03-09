@@ -1,46 +1,65 @@
-import { useState } from 'react';
-import { useGetAllBonuses, useApplyBonus } from '../../hooks/useBonuses';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { BonusType } from '../../backend';
-import { Gift } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Gift } from "lucide-react";
+import { useState } from "react";
+import { BonusType } from "../../backend";
+import { useApplyBonus, useGetAllBonuses } from "../../hooks/useBonuses";
 
 export default function BonusManagement() {
   const { data: bonuses = [] } = useGetAllBonuses();
   const applyBonusMutation = useApplyBonus();
 
-  const [targetUser, setTargetUser] = useState('');
-  const [amount, setAmount] = useState('');
-  const [bonusType, setBonusType] = useState<string>('depositMatch');
-  const [description, setDescription] = useState('');
+  const [targetUser, setTargetUser] = useState("");
+  const [amount, setAmount] = useState("");
+  const [bonusType, setBonusType] = useState<string>("depositMatch");
+  const [description, setDescription] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     const typeMap: Record<string, BonusType> = {
       depositMatch: BonusType.depositMatch,
       signup: BonusType.signup,
-      loyalty: BonusType.loyalty
+      loyalty: BonusType.loyalty,
     };
 
     applyBonusMutation.mutate(
       {
         targetUser,
-        amount: parseFloat(amount),
+        amount: Number.parseFloat(amount),
         bonusType: typeMap[bonusType],
-        description
+        description,
       },
       {
         onSuccess: () => {
-          setTargetUser('');
-          setAmount('');
-          setDescription('');
-        }
-      }
+          setTargetUser("");
+          setAmount("");
+          setDescription("");
+        },
+      },
     );
   };
 
@@ -112,7 +131,7 @@ export default function BonusManagement() {
             </div>
 
             <Button type="submit" disabled={applyBonusMutation.isPending}>
-              {applyBonusMutation.isPending ? 'Applying...' : 'Apply Bonus'}
+              {applyBonusMutation.isPending ? "Applying..." : "Apply Bonus"}
             </Button>
           </form>
         </CardContent>

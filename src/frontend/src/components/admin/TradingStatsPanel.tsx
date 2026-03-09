@@ -1,18 +1,34 @@
-import { useGetAllTrades } from '../../hooks/useTrading';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
-import { TradeDirection, TradeStatus } from '../../backend';
-import { TrendingUp, TrendingDown, Activity } from 'lucide-react';
+import { Badge } from "@/components/ui/badge";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Activity, TrendingDown, TrendingUp } from "lucide-react";
+import { TradeDirection, TradeStatus } from "../../backend";
+import { useGetAllTrades } from "../../hooks/useTrading";
 
 export default function TradingStatsPanel() {
   const { data: allTrades = [] } = useGetAllTrades();
 
-  const openTrades = allTrades.filter(t => t.status === TradeStatus.open);
-  const closedTrades = allTrades.filter(t => t.status === TradeStatus.closed);
-  
+  const openTrades = allTrades.filter((t) => t.status === TradeStatus.open);
+  const closedTrades = allTrades.filter((t) => t.status === TradeStatus.closed);
+
   const totalVolume = allTrades.reduce((sum, t) => sum + t.margin, 0);
-  const totalPnL = closedTrades.reduce((sum, t) => sum + (t.profitLoss || 0), 0);
+  const _totalPnL = closedTrades.reduce(
+    (sum, t) => sum + (t.profitLoss || 0),
+    0,
+  );
 
   const formatDate = (timestamp: bigint) => {
     return new Date(Number(timestamp) / 1000000).toLocaleString();
@@ -33,7 +49,9 @@ export default function TradingStatsPanel() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Open Positions</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Open Positions
+            </CardTitle>
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -55,7 +73,9 @@ export default function TradingStatsPanel() {
       <Card>
         <CardHeader>
           <CardTitle>Recent Trades</CardTitle>
-          <CardDescription>All trading activity across the platform</CardDescription>
+          <CardDescription>
+            All trading activity across the platform
+          </CardDescription>
         </CardHeader>
         <CardContent>
           {allTrades.length === 0 ? (
@@ -81,25 +101,48 @@ export default function TradingStatsPanel() {
                     <TableCell className="font-mono text-xs">
                       {trade.user.toString().slice(0, 8)}...
                     </TableCell>
-                    <TableCell className="font-medium">{trade.forexPair.symbol}</TableCell>
+                    <TableCell className="font-medium">
+                      {trade.forexPair.symbol}
+                    </TableCell>
                     <TableCell>
-                      <Badge variant={trade.direction === TradeDirection.buy ? 'default' : 'secondary'}>
-                        {trade.direction === TradeDirection.buy ? 'BUY' : 'SELL'}
+                      <Badge
+                        variant={
+                          trade.direction === TradeDirection.buy
+                            ? "default"
+                            : "secondary"
+                        }
+                      >
+                        {trade.direction === TradeDirection.buy
+                          ? "BUY"
+                          : "SELL"}
                       </Badge>
                     </TableCell>
                     <TableCell>${trade.margin.toFixed(2)}</TableCell>
                     <TableCell>
-                      <Badge variant={trade.status === TradeStatus.open ? 'secondary' : 'outline'}>
-                        {trade.status === TradeStatus.open ? 'OPEN' : 'CLOSED'}
+                      <Badge
+                        variant={
+                          trade.status === TradeStatus.open
+                            ? "secondary"
+                            : "outline"
+                        }
+                      >
+                        {trade.status === TradeStatus.open ? "OPEN" : "CLOSED"}
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      {trade.profitLoss !== undefined && trade.profitLoss !== null ? (
-                        <span className={trade.profitLoss >= 0 ? 'text-secondary font-medium' : 'text-destructive font-medium'}>
+                      {trade.profitLoss !== undefined &&
+                      trade.profitLoss !== null ? (
+                        <span
+                          className={
+                            trade.profitLoss >= 0
+                              ? "text-secondary font-medium"
+                              : "text-destructive font-medium"
+                          }
+                        >
                           ${trade.profitLoss.toFixed(2)}
                         </span>
                       ) : (
-                        '-'
+                        "-"
                       )}
                     </TableCell>
                     <TableCell className="text-sm text-muted-foreground">

@@ -1,6 +1,13 @@
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
-import type { DepositRequest, Bonus, TradingFee } from '../../backend';
+import { Badge } from "@/components/ui/badge";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import type { Bonus, DepositRequest, TradingFee } from "../../backend";
 
 interface RequestsHistoryProps {
   deposits: DepositRequest[];
@@ -9,47 +16,55 @@ interface RequestsHistoryProps {
 }
 
 type HistoryItem = {
-  type: 'deposit' | 'bonus' | 'fee';
+  type: "deposit" | "bonus" | "fee";
   timestamp: bigint;
   amount: number;
   status?: string;
   description?: string;
 };
 
-export default function RequestsHistory({ deposits, bonuses, fees }: RequestsHistoryProps) {
+export default function RequestsHistory({
+  deposits,
+  bonuses,
+  fees,
+}: RequestsHistoryProps) {
   const formatDate = (timestamp: bigint) => {
     return new Date(Number(timestamp) / 1000000).toLocaleString();
   };
 
   const getStatusBadge = (status: string) => {
-    const variants: Record<string, 'default' | 'secondary' | 'destructive'> = {
-      pending: 'secondary',
-      approved: 'default',
-      rejected: 'destructive'
+    const variants: Record<string, "default" | "secondary" | "destructive"> = {
+      pending: "secondary",
+      approved: "default",
+      rejected: "destructive",
     };
-    return <Badge variant={variants[status] || 'default'}>{status.toUpperCase()}</Badge>;
+    return (
+      <Badge variant={variants[status] || "default"}>
+        {status.toUpperCase()}
+      </Badge>
+    );
   };
 
   const history: HistoryItem[] = [
-    ...deposits.map(d => ({
-      type: 'deposit' as const,
+    ...deposits.map((d) => ({
+      type: "deposit" as const,
       timestamp: d.timestamp,
       amount: d.amount,
       status: Object.keys(d.status)[0],
-      description: `Deposit request`
+      description: "Deposit request",
     })),
-    ...bonuses.map(b => ({
-      type: 'bonus' as const,
+    ...bonuses.map((b) => ({
+      type: "bonus" as const,
       timestamp: b.timestamp,
       amount: b.amount,
-      description: b.description
+      description: b.description,
     })),
-    ...fees.map(f => ({
-      type: 'fee' as const,
+    ...fees.map((f) => ({
+      type: "fee" as const,
       timestamp: f.timestamp,
       amount: -f.amount,
-      description: `Trading fee for trade #${f.tradeId}`
-    }))
+      description: `Trading fee for trade #${f.tradeId}`,
+    })),
   ].sort((a, b) => Number(b.timestamp - a.timestamp));
 
   if (history.length === 0) {
@@ -72,21 +87,27 @@ export default function RequestsHistory({ deposits, bonuses, fees }: RequestsHis
         </TableRow>
       </TableHeader>
       <TableBody>
-        {history.map((item, index) => (
-          <TableRow key={index}>
+        {history.map((item) => (
+          <TableRow
+            key={`${item.type}-${String(item.timestamp)}-${item.amount}`}
+          >
             <TableCell>
-              <Badge variant="outline">
-                {item.type.toUpperCase()}
-              </Badge>
+              <Badge variant="outline">{item.type.toUpperCase()}</Badge>
             </TableCell>
             <TableCell>{item.description}</TableCell>
             <TableCell>
-              <span className={item.amount >= 0 ? 'text-secondary font-medium' : 'text-destructive font-medium'}>
-                {item.amount >= 0 ? '+' : ''}${item.amount.toFixed(2)}
+              <span
+                className={
+                  item.amount >= 0
+                    ? "text-secondary font-medium"
+                    : "text-destructive font-medium"
+                }
+              >
+                {item.amount >= 0 ? "+" : ""}${item.amount.toFixed(2)}
               </span>
             </TableCell>
             <TableCell>
-              {item.status ? getStatusBadge(item.status) : '-'}
+              {item.status ? getStatusBadge(item.status) : "-"}
             </TableCell>
             <TableCell className="text-sm text-muted-foreground">
               {formatDate(item.timestamp)}

@@ -1,41 +1,53 @@
-import { useState } from 'react';
-import { useDepositFunds } from '../../hooks/useWallet';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import MpesaInstructionsCard from './MpesaInstructionsCard';
-import { DollarSign } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { DollarSign } from "lucide-react";
+import { useState } from "react";
+import { useDepositFunds } from "../../hooks/useWallet";
+import MpesaInstructionsCard from "./MpesaInstructionsCard";
 
 export default function DepositForm() {
-  const [amount, setAmount] = useState('');
-  const [paymentMethod, setPaymentMethod] = useState('mpesa');
-  const [mpesaPhone, setMpesaPhone] = useState('');
-  const [mpesaRef, setMpesaRef] = useState('');
+  const [amount, setAmount] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState("mpesa");
+  const [mpesaPhone, setMpesaPhone] = useState("");
+  const [mpesaRef, setMpesaRef] = useState("");
 
   const depositMutation = useDepositFunds();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     let mpesaReference: string | null = null;
-    if (paymentMethod === 'mpesa') {
+    if (paymentMethod === "mpesa") {
       mpesaReference = JSON.stringify({
         phone: mpesaPhone,
-        reference: mpesaRef
+        reference: mpesaRef,
       });
     }
 
     depositMutation.mutate(
-      { amount: parseFloat(amount), mpesaRef: mpesaReference },
+      { amount: Number.parseFloat(amount), mpesaRef: mpesaReference },
       {
         onSuccess: () => {
-          setAmount('');
-          setMpesaPhone('');
-          setMpesaRef('');
-        }
-      }
+          setAmount("");
+          setMpesaPhone("");
+          setMpesaRef("");
+        },
+      },
     );
   };
 
@@ -77,10 +89,10 @@ export default function DepositForm() {
             </Select>
           </div>
 
-          {paymentMethod === 'mpesa' && (
+          {paymentMethod === "mpesa" && (
             <>
               <MpesaInstructionsCard type="deposit" />
-              
+
               <div className="space-y-2">
                 <Label htmlFor="mpesa-phone">M-Pesa Phone Number</Label>
                 <Input
@@ -106,12 +118,14 @@ export default function DepositForm() {
             </>
           )}
 
-          <Button 
-            type="submit" 
-            className="w-full" 
+          <Button
+            type="submit"
+            className="w-full"
             disabled={depositMutation.isPending}
           >
-            {depositMutation.isPending ? 'Submitting...' : 'Submit Deposit Request'}
+            {depositMutation.isPending
+              ? "Submitting..."
+              : "Submit Deposit Request"}
           </Button>
         </form>
       </CardContent>

@@ -1,12 +1,12 @@
-import { Card, CardContent } from '@/components/ui/card';
-import { Loader2 } from 'lucide-react';
+import { Card, CardContent } from "@/components/ui/card";
+import { Loader2 } from "lucide-react";
 
 interface CenteredLoadingCardProps {
   message?: string;
 }
 
-export default function CenteredLoadingCard({ 
-  message = 'Loading...' 
+export default function CenteredLoadingCard({
+  message = "Loading...",
 }: CenteredLoadingCardProps) {
   return (
     <div className="container flex items-center justify-center min-h-[60vh]">

@@ -178,11 +178,16 @@ export interface backendInterface {
     getCallerUserProfile(): Promise<UserProfile | null>;
     getCallerUserRole(): Promise<UserRole>;
     getDepositStatus(): Promise<Array<DepositRequest>>;
+    getEurUsdPrice(): Promise<number>;
+    getGbpUsdPrice(): Promise<number>;
     getMpesaNumber(): Promise<string>;
     getOpenTrades(): Promise<Array<TradePosition>>;
     getPlatformRevenue(): Promise<number>;
+    getQuote(symbol: string): Promise<number>;
     getTradeHistory(): Promise<Array<TradePosition>>;
     getTradingFees(): Promise<Array<TradingFee>>;
+    getUsdChfPrice(): Promise<number>;
+    getUsdJpyPrice(): Promise<number>;
     getUserBonuses(): Promise<Array<Bonus>>;
     getUserProfile(user: Principal): Promise<UserProfile | null>;
     isCallerAdmin(): Promise<boolean>;
@@ -392,6 +397,34 @@ export class Backend implements backendInterface {
             return from_candid_vec_n24(this._uploadFile, this._downloadFile, result);
         }
     }
+    async getEurUsdPrice(): Promise<number> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getEurUsdPrice();
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getEurUsdPrice();
+            return result;
+        }
+    }
+    async getGbpUsdPrice(): Promise<number> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getGbpUsdPrice();
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getGbpUsdPrice();
+            return result;
+        }
+    }
     async getMpesaNumber(): Promise<string> {
         if (this.processError) {
             try {
@@ -434,6 +467,20 @@ export class Backend implements backendInterface {
             return result;
         }
     }
+    async getQuote(arg0: string): Promise<number> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getQuote(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getQuote(arg0);
+            return result;
+        }
+    }
     async getTradeHistory(): Promise<Array<TradePosition>> {
         if (this.processError) {
             try {
@@ -459,6 +506,34 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor.getTradingFees();
+            return result;
+        }
+    }
+    async getUsdChfPrice(): Promise<number> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getUsdChfPrice();
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getUsdChfPrice();
+            return result;
+        }
+    }
+    async getUsdJpyPrice(): Promise<number> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getUsdJpyPrice();
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getUsdJpyPrice();
             return result;
         }
     }

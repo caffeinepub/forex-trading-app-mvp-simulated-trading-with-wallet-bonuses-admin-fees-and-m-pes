@@ -1,28 +1,40 @@
-import { useState } from 'react';
-import { useWithdrawFunds } from '../../hooks/useWallet';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import MpesaInstructionsCard from './MpesaInstructionsCard';
-import { ArrowUpRight } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { ArrowUpRight } from "lucide-react";
+import { useState } from "react";
+import { useWithdrawFunds } from "../../hooks/useWallet";
+import MpesaInstructionsCard from "./MpesaInstructionsCard";
 
 export default function WithdrawForm() {
-  const [amount, setAmount] = useState('');
-  const [paymentMethod, setPaymentMethod] = useState('mpesa');
-  const [mpesaPhone, setMpesaPhone] = useState('');
+  const [amount, setAmount] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState("mpesa");
+  const [mpesaPhone, setMpesaPhone] = useState("");
 
   const withdrawMutation = useWithdrawFunds();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
-    withdrawMutation.mutate(parseFloat(amount), {
+
+    withdrawMutation.mutate(Number.parseFloat(amount), {
       onSuccess: () => {
-        setAmount('');
-        setMpesaPhone('');
-      }
+        setAmount("");
+        setMpesaPhone("");
+      },
     });
   };
 
@@ -64,12 +76,14 @@ export default function WithdrawForm() {
             </Select>
           </div>
 
-          {paymentMethod === 'mpesa' && (
+          {paymentMethod === "mpesa" && (
             <>
               <MpesaInstructionsCard type="withdrawal" />
-              
+
               <div className="space-y-2">
-                <Label htmlFor="withdraw-mpesa-phone">M-Pesa Phone Number</Label>
+                <Label htmlFor="withdraw-mpesa-phone">
+                  M-Pesa Phone Number
+                </Label>
                 <Input
                   id="withdraw-mpesa-phone"
                   type="tel"
@@ -82,12 +96,14 @@ export default function WithdrawForm() {
             </>
           )}
 
-          <Button 
-            type="submit" 
-            className="w-full" 
+          <Button
+            type="submit"
+            className="w-full"
             disabled={withdrawMutation.isPending}
           >
-            {withdrawMutation.isPending ? 'Processing...' : 'Request Withdrawal'}
+            {withdrawMutation.isPending
+              ? "Processing..."
+              : "Request Withdrawal"}
           </Button>
         </form>
       </CardContent>

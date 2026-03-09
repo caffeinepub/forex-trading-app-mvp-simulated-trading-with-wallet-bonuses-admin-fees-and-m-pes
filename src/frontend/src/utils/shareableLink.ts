@@ -5,14 +5,14 @@
  */
 export function getShareableLink(): string {
   const { origin, pathname, hash } = window.location;
-  
+
   // Hash-based routing format: https://example.com/#/path
   // If no hash exists, default to root
-  const hashPath = hash || '#/';
-  
+  const hashPath = hash || "#/";
+
   // For canister deployments, preserve the full base path
   // The pathname might include canister-specific routing context
-  const basePath = pathname === '/' ? '' : pathname;
-  
+  const basePath = pathname === "/" ? "" : pathname;
+
   return `${origin}${basePath}${hashPath}`;
 }

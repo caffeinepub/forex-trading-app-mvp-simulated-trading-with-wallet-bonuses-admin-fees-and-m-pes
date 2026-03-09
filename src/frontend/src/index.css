@@ -3,87 +3,121 @@
 @tailwind utilities;
 
 @layer base {
-    :root {
-        --radius: 0.75rem;
-        /* Light mode - Sophisticated slate with vibrant gold/cyan accents */
-        --background: 0.99 0 0;
-        --foreground: 0.20 0.015 260;
-        --card: 1 0 0;
-        --card-foreground: 0.20 0.015 260;
-        --popover: 1 0 0;
-        --popover-foreground: 0.20 0.015 260;
-        --primary: 0.68 0.18 75; /* Vibrant gold */
-        --primary-foreground: 0.12 0.01 260;
-        --secondary: 0.62 0.16 195; /* Cyan accent */
-        --secondary-foreground: 0.99 0 0;
-        --muted: 0.94 0.008 260;
-        --muted-foreground: 0.48 0.012 260;
-        --accent: 0.62 0.16 195;
-        --accent-foreground: 0.99 0 0;
-        --destructive: 0.58 0.24 28;
-        --destructive-foreground: 0.99 0 0;
-        --border: 0.90 0.008 260;
-        --input: 0.90 0.008 260;
-        --ring: 0.68 0.18 75;
-        --chart-1: 0.68 0.18 75;
-        --chart-2: 0.62 0.16 195;
-        --chart-3: 0.55 0.20 280;
-        --chart-4: 0.65 0.22 40;
-        --chart-5: 0.58 0.18 320;
-    }
+  :root {
+    /* Terminal-inspired neutral base with warm accent */
+    --background: oklch(98% 0.002 264);
+    --foreground: oklch(20% 0.01 264);
 
-    .dark {
-        /* Dark mode - Deep slate with luminous gold/cyan highlights */
-        --background: 0.15 0.015 260;
-        --foreground: 0.96 0.005 75;
-        --card: 0.19 0.018 260;
-        --card-foreground: 0.96 0.005 75;
-        --popover: 0.17 0.016 260;
-        --popover-foreground: 0.96 0.005 75;
-        --primary: 0.75 0.20 75; /* Luminous gold */
-        --primary-foreground: 0.12 0.01 260;
-        --secondary: 0.68 0.18 195; /* Bright cyan */
-        --secondary-foreground: 0.12 0.01 260;
-        --muted: 0.25 0.018 260;
-        --muted-foreground: 0.68 0.012 260;
-        --accent: 0.28 0.022 260;
-        --accent-foreground: 0.96 0.005 75;
-        --destructive: 0.62 0.26 28;
-        --destructive-foreground: 0.96 0 0;
-        --border: 0.28 0.022 260;
-        --input: 0.28 0.022 260;
-        --ring: 0.75 0.20 75;
-        --chart-1: 0.75 0.20 75;
-        --chart-2: 0.68 0.18 195;
-        --chart-3: 0.58 0.22 280;
-        --chart-4: 0.70 0.24 40;
-        --chart-5: 0.62 0.20 320;
-    }
+    --card: oklch(100% 0 0);
+    --card-foreground: oklch(20% 0.01 264);
 
-    * {
-        @apply border-border;
-    }
-    
-    body {
-        @apply bg-background text-foreground;
-        font-feature-settings: "rlig" 1, "calt" 1;
-    }
+    --popover: oklch(100% 0 0);
+    --popover-foreground: oklch(20% 0.01 264);
+
+    /* Warm gold primary for terminal aesthetic */
+    --primary: oklch(65% 0.15 85);
+    --primary-foreground: oklch(15% 0.01 85);
+
+    /* Cyan secondary for bullish/positive */
+    --secondary: oklch(70% 0.14 195);
+    --secondary-foreground: oklch(15% 0.01 195);
+
+    --muted: oklch(96% 0.005 264);
+    --muted-foreground: oklch(50% 0.01 264);
+
+    --accent: oklch(95% 0.01 264);
+    --accent-foreground: oklch(20% 0.01 264);
+
+    --destructive: oklch(58% 0.18 25);
+    --destructive-foreground: oklch(98% 0.002 25);
+
+    --border: oklch(88% 0.01 264);
+    --input: oklch(88% 0.01 264);
+    --ring: oklch(65% 0.15 85);
+
+    --radius: 0.5rem;
+
+    /* Chart colors for indicators */
+    --chart-1: oklch(60% 0.12 280);
+    --chart-2: oklch(65% 0.14 160);
+    --chart-3: oklch(62% 0.16 340);
+    --chart-4: oklch(68% 0.13 120);
+    --chart-5: oklch(64% 0.15 50);
+  }
+
+  .dark {
+    /* Dark terminal theme with graphite surfaces */
+    --background: oklch(15% 0.01 264);
+    --foreground: oklch(95% 0.005 264);
+
+    --card: oklch(18% 0.01 264);
+    --card-foreground: oklch(95% 0.005 264);
+
+    --popover: oklch(18% 0.01 264);
+    --popover-foreground: oklch(95% 0.005 264);
+
+    /* Warm gold primary maintains visibility in dark */
+    --primary: oklch(75% 0.15 85);
+    --primary-foreground: oklch(15% 0.01 85);
+
+    /* Bright cyan for bullish in dark mode */
+    --secondary: oklch(75% 0.16 195);
+    --secondary-foreground: oklch(15% 0.01 195);
+
+    --muted: oklch(22% 0.01 264);
+    --muted-foreground: oklch(65% 0.01 264);
+
+    --accent: oklch(25% 0.015 264);
+    --accent-foreground: oklch(95% 0.005 264);
+
+    --destructive: oklch(62% 0.2 25);
+    --destructive-foreground: oklch(98% 0.002 25);
+
+    --border: oklch(28% 0.015 264);
+    --input: oklch(28% 0.015 264);
+    --ring: oklch(75% 0.15 85);
+
+    /* Chart colors optimized for dark backgrounds */
+    --chart-1: oklch(70% 0.14 280);
+    --chart-2: oklch(72% 0.16 160);
+    --chart-3: oklch(68% 0.18 340);
+    --chart-4: oklch(74% 0.15 120);
+    --chart-5: oklch(70% 0.17 50);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
 }
 
 @layer utilities {
-    .text-balance {
-        text-wrap: balance;
-    }
-    
-    .gradient-premium {
-        background: linear-gradient(135deg, oklch(var(--primary) / 0.15), oklch(var(--secondary) / 0.15));
-    }
-    
-    .gradient-premium-border {
-        background: linear-gradient(135deg, oklch(var(--primary)), oklch(var(--secondary)));
-    }
-    
-    .glow-text {
-        text-shadow: 0 0 20px oklch(var(--primary) / 0.4);
-    }
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* Terminal-style utilities */
+  .terminal-grid {
+    background-image: linear-gradient(
+        to right,
+        oklch(var(--border) / 0.1) 1px,
+        transparent 1px
+      ),
+      linear-gradient(
+        to bottom,
+        oklch(var(--border) / 0.1) 1px,
+        transparent 1px
+      );
+    background-size: 20px 20px;
+  }
+
+  .shadow-premium {
+    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05), 0 0 0 1px
+      oklch(var(--border) / 0.1);
+  }
 }

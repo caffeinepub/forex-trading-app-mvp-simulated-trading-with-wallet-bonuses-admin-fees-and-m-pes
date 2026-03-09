@@ -9,11 +9,12 @@ export interface AuthConfigValidation {
 
 export function validateAuthConfig(): AuthConfigValidation {
   const providerUrl = process.env.II_URL;
-  
-  if (!providerUrl || providerUrl.trim() === '') {
+
+  if (!providerUrl || providerUrl.trim() === "") {
     return {
       isValid: false,
-      errorMessage: 'Internet Identity provider is not configured. Please contact support.'
+      errorMessage:
+        "Internet Identity provider is not configured. Please contact support.",
     };
   }
 
@@ -23,7 +24,8 @@ export function validateAuthConfig(): AuthConfigValidation {
   } catch {
     return {
       isValid: false,
-      errorMessage: 'Internet Identity provider URL is invalid. Please contact support.'
+      errorMessage:
+        "Internet Identity provider URL is invalid. Please contact support.",
     };
   }
 

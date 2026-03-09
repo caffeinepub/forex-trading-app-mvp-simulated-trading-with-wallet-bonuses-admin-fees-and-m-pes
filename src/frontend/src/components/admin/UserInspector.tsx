@@ -1,12 +1,25 @@
-import { useGetAllTrades } from '../../hooks/useTrading';
-import { useGetAllDepositRequests } from '../../hooks/useWallet';
-import { useGetAllBonuses } from '../../hooks/useBonuses';
-import { useGetAllTradingFees } from '../../hooks/useFees';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
-import { TradeDirection, TradeStatus } from '../../backend';
-import { User } from 'lucide-react';
+import { Badge } from "@/components/ui/badge";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { User } from "lucide-react";
+import { TradeDirection, TradeStatus } from "../../backend";
+import { useGetAllBonuses } from "../../hooks/useBonuses";
+import { useGetAllTradingFees } from "../../hooks/useFees";
+import { useGetAllTrades } from "../../hooks/useTrading";
+import { useGetAllDepositRequests } from "../../hooks/useWallet";
 
 interface UserInspectorProps {
   userPrincipal: string;
@@ -18,17 +31,23 @@ export default function UserInspector({ userPrincipal }: UserInspectorProps) {
   const { data: allBonuses = [] } = useGetAllBonuses();
   const { data: allFees = [] } = useGetAllTradingFees();
 
-  const userTrades = allTrades.filter(t => t.user.toString() === userPrincipal);
-  const userDeposits = allDeposits.filter(d => d.user.toString() === userPrincipal);
-  const userBonuses = allBonuses.filter(b => b.user.toString() === userPrincipal);
-  const userFees = allFees.filter(f => f.user.toString() === userPrincipal);
+  const userTrades = allTrades.filter(
+    (t) => t.user.toString() === userPrincipal,
+  );
+  const userDeposits = allDeposits.filter(
+    (d) => d.user.toString() === userPrincipal,
+  );
+  const userBonuses = allBonuses.filter(
+    (b) => b.user.toString() === userPrincipal,
+  );
+  const userFees = allFees.filter((f) => f.user.toString() === userPrincipal);
 
   const formatDate = (timestamp: bigint) => {
     return new Date(Number(timestamp) / 1000000).toLocaleString();
   };
 
   const totalPnL = userTrades
-    .filter(t => t.profitLoss !== undefined && t.profitLoss !== null)
+    .filter((t) => t.profitLoss !== undefined && t.profitLoss !== null)
     .reduce((sum, t) => sum + (t.profitLoss || 0), 0);
 
   return (
@@ -51,7 +70,9 @@ export default function UserInspector({ userPrincipal }: UserInspectorProps) {
             </div>
             <div>
               <div className="text-sm text-muted-foreground">Total P&L</div>
-              <div className={`text-2xl font-bold ${totalPnL >= 0 ? 'text-secondary' : 'text-destructive'}`}>
+              <div
+                className={`text-2xl font-bold ${totalPnL >= 0 ? "text-secondary" : "text-destructive"}`}
+              >
                 ${totalPnL.toFixed(2)}
               </div>
             </div>
@@ -73,7 +94,9 @@ export default function UserInspector({ userPrincipal }: UserInspectorProps) {
         </CardHeader>
         <CardContent>
           {userTrades.length === 0 ? (
-            <div className="py-8 text-center text-muted-foreground">No trades yet.</div>
+            <div className="py-8 text-center text-muted-foreground">
+              No trades yet.
+            </div>
           ) : (
             <Table>
               <TableHeader>
@@ -91,23 +114,44 @@ export default function UserInspector({ userPrincipal }: UserInspectorProps) {
                   <TableRow key={trade.tradeId.toString()}>
                     <TableCell>{trade.forexPair.symbol}</TableCell>
                     <TableCell>
-                      <Badge variant={trade.direction === TradeDirection.buy ? 'default' : 'secondary'}>
-                        {trade.direction === TradeDirection.buy ? 'BUY' : 'SELL'}
+                      <Badge
+                        variant={
+                          trade.direction === TradeDirection.buy
+                            ? "default"
+                            : "secondary"
+                        }
+                      >
+                        {trade.direction === TradeDirection.buy
+                          ? "BUY"
+                          : "SELL"}
                       </Badge>
                     </TableCell>
                     <TableCell>${trade.margin.toFixed(2)}</TableCell>
                     <TableCell>
-                      <Badge variant={trade.status === TradeStatus.open ? 'secondary' : 'outline'}>
-                        {trade.status === TradeStatus.open ? 'OPEN' : 'CLOSED'}
+                      <Badge
+                        variant={
+                          trade.status === TradeStatus.open
+                            ? "secondary"
+                            : "outline"
+                        }
+                      >
+                        {trade.status === TradeStatus.open ? "OPEN" : "CLOSED"}
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      {trade.profitLoss !== undefined && trade.profitLoss !== null ? (
-                        <span className={trade.profitLoss >= 0 ? 'text-secondary' : 'text-destructive'}>
+                      {trade.profitLoss !== undefined &&
+                      trade.profitLoss !== null ? (
+                        <span
+                          className={
+                            trade.profitLoss >= 0
+                              ? "text-secondary"
+                              : "text-destructive"
+                          }
+                        >
                           ${trade.profitLoss.toFixed(2)}
                         </span>
                       ) : (
-                        '-'
+                        "-"
                       )}
                     </TableCell>
                     <TableCell className="text-sm text-muted-foreground">
@@ -141,9 +185,13 @@ export default function UserInspector({ userPrincipal }: UserInspectorProps) {
                   <TableCell>
                     <Badge variant="outline">DEPOSIT</Badge>
                   </TableCell>
-                  <TableCell className="text-secondary">${deposit.amount.toFixed(2)}</TableCell>
+                  <TableCell className="text-secondary">
+                    ${deposit.amount.toFixed(2)}
+                  </TableCell>
                   <TableCell>
-                    <Badge>{Object.keys(deposit.status)[0].toUpperCase()}</Badge>
+                    <Badge>
+                      {Object.keys(deposit.status)[0].toUpperCase()}
+                    </Badge>
                   </TableCell>
                   <TableCell className="text-sm text-muted-foreground">
                     {formatDate(deposit.timestamp)}
@@ -155,7 +203,9 @@ export default function UserInspector({ userPrincipal }: UserInspectorProps) {
                   <TableCell>
                     <Badge variant="outline">BONUS</Badge>
                   </TableCell>
-                  <TableCell className="text-secondary">${bonus.amount.toFixed(2)}</TableCell>
+                  <TableCell className="text-secondary">
+                    ${bonus.amount.toFixed(2)}
+                  </TableCell>
                   <TableCell>{bonus.description}</TableCell>
                   <TableCell className="text-sm text-muted-foreground">
                     {formatDate(bonus.timestamp)}
@@ -167,7 +217,9 @@ export default function UserInspector({ userPrincipal }: UserInspectorProps) {
                   <TableCell>
                     <Badge variant="outline">FEE</Badge>
                   </TableCell>
-                  <TableCell className="text-destructive">-${fee.amount.toFixed(2)}</TableCell>
+                  <TableCell className="text-destructive">
+                    -${fee.amount.toFixed(2)}
+                  </TableCell>
                   <TableCell>Trade #{fee.tradeId.toString()}</TableCell>
                   <TableCell className="text-sm text-muted-foreground">
                     {formatDate(fee.timestamp)}

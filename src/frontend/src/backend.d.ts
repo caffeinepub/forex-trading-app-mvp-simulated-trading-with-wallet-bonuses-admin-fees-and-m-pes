@@ -95,11 +95,16 @@ export interface backendInterface {
     getCallerUserProfile(): Promise<UserProfile | null>;
     getCallerUserRole(): Promise<UserRole>;
     getDepositStatus(): Promise<Array<DepositRequest>>;
+    getEurUsdPrice(): Promise<number>;
+    getGbpUsdPrice(): Promise<number>;
     getMpesaNumber(): Promise<string>;
     getOpenTrades(): Promise<Array<TradePosition>>;
     getPlatformRevenue(): Promise<number>;
+    getQuote(symbol: string): Promise<number>;
     getTradeHistory(): Promise<Array<TradePosition>>;
     getTradingFees(): Promise<Array<TradingFee>>;
+    getUsdChfPrice(): Promise<number>;
+    getUsdJpyPrice(): Promise<number>;
     getUserBonuses(): Promise<Array<Bonus>>;
     getUserProfile(user: Principal): Promise<UserProfile | null>;
     isCallerAdmin(): Promise<boolean>;

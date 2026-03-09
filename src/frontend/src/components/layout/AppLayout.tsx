@@ -1,14 +1,14 @@
-import { Outlet, useNavigate, useRouterState } from '@tanstack/react-router';
-import { useInternetIdentity } from '../../hooks/useInternetIdentity';
-import { useIsCallerAdmin } from '../../hooks/useCurrentUser';
-import LoginButton from '../auth/LoginButton';
-import { TrendingUp, Wallet, Shield, Menu, Heart, Share2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { useState } from 'react';
-import { APP_NAME } from '../../config/branding';
-import { getShareableLink } from '../../utils/shareableLink';
-import { toast } from 'sonner';
+import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Outlet, useNavigate, useRouterState } from "@tanstack/react-router";
+import { Heart, Menu, Share2, Shield, TrendingUp, Wallet } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
+import { APP_NAME } from "../../config/branding";
+import { useIsCallerAdmin } from "../../hooks/useCurrentUser";
+import { useInternetIdentity } from "../../hooks/useInternetIdentity";
+import { getShareableLink } from "../../utils/shareableLink";
+import LoginButton from "../auth/LoginButton";
 
 export default function AppLayout() {
   const navigate = useNavigate();
@@ -21,21 +21,29 @@ export default function AppLayout() {
   const isAuthenticated = !!identity;
 
   const navItems = [
-    { path: '/trading', label: 'Trading', icon: TrendingUp, requiresAuth: true },
-    { path: '/wallet', label: 'Wallet', icon: Wallet, requiresAuth: true },
-    ...(isAdmin ? [{ path: '/admin', label: 'Admin', icon: Shield, requiresAuth: true }] : [])
+    {
+      path: "/trading",
+      label: "Trading",
+      icon: TrendingUp,
+      requiresAuth: true,
+    },
+    { path: "/wallet", label: "Wallet", icon: Wallet, requiresAuth: true },
+    ...(isAdmin
+      ? [{ path: "/admin", label: "Admin", icon: Shield, requiresAuth: true }]
+      : []),
   ];
 
   const handleCopyLink = async () => {
     try {
       const shareableUrl = getShareableLink();
       await navigator.clipboard.writeText(shareableUrl);
-      toast.success('Link copied to clipboard!', {
-        description: 'You can now share this link with others.'
+      toast.success("Link copied to clipboard!", {
+        description: "You can now share this link with others.",
       });
-    } catch (error) {
-      toast.error('Failed to copy link', {
-        description: 'Please try again or copy the URL manually from your browser.'
+    } catch (_error) {
+      toast.error("Failed to copy link", {
+        description:
+          "Please try again or copy the URL manually from your browser.",
       });
     }
   };
@@ -46,16 +54,16 @@ export default function AppLayout() {
         if (item.requiresAuth && !isAuthenticated) return null;
         const Icon = item.icon;
         const isActive = currentPath === item.path;
-        
+
         return (
           <Button
             key={item.path}
-            variant={isActive ? 'default' : 'ghost'}
+            variant={isActive ? "default" : "ghost"}
             onClick={() => {
               navigate({ to: item.path });
               if (mobile) setMobileMenuOpen(false);
             }}
-            className={mobile ? 'w-full justify-start' : ''}
+            className={mobile ? "w-full justify-start" : ""}
           >
             <Icon className="w-4 h-4 mr-2" />
             {item.label}
@@ -71,14 +79,15 @@ export default function AppLayout() {
         <div className="container flex h-16 items-center justify-between">
           <div className="flex items-center gap-6">
             <button
-              onClick={() => navigate({ to: '/' })}
+              type="button"
+              onClick={() => navigate({ to: "/" })}
               className="flex items-center gap-3 hover:opacity-80 transition-all group"
             >
               <div className="relative">
-                <img 
-                  src="./assets/generated/app-logo.dim_512x512.png" 
-                  alt={APP_NAME} 
-                  className="h-9 w-9 transition-transform group-hover:scale-110" 
+                <img
+                  src="./assets/generated/app-logo.dim_512x512.png"
+                  alt={APP_NAME}
+                  className="h-9 w-9 transition-transform group-hover:scale-110"
                 />
                 <div className="absolute inset-0 bg-gradient-to-tr from-primary/20 to-secondary/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
               </div>
@@ -86,7 +95,7 @@ export default function AppLayout() {
                 {APP_NAME}
               </span>
             </button>
-            
+
             <nav className="hidden md:flex items-center gap-2">
               <NavLinks />
             </nav>
@@ -102,9 +111,9 @@ export default function AppLayout() {
             >
               <Share2 className="h-4 w-4" />
             </Button>
-            
+
             <LoginButton />
-            
+
             <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
               <SheetTrigger asChild className="md:hidden">
                 <Button variant="ghost" size="icon">
@@ -139,9 +148,13 @@ export default function AppLayout() {
       <footer className="border-t border-border/40 bg-card/30 backdrop-blur-xl">
         <div className="container py-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
-            <p>© {new Date().getFullYear()} {APP_NAME}. All rights reserved.</p>
+            <p>
+              © {new Date().getFullYear()} {APP_NAME}. All rights reserved.
+            </p>
             <p className="flex items-center gap-1.5">
-              Built with <Heart className="h-3.5 w-3.5 text-destructive fill-destructive animate-pulse" /> using{' '}
+              Built with{" "}
+              <Heart className="h-3.5 w-3.5 text-destructive fill-destructive animate-pulse" />{" "}
+              using{" "}
               <a
                 href={`https://caffeine.ai/?utm_source=Caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(window.location.hostname)}`}
                 target="_blank"

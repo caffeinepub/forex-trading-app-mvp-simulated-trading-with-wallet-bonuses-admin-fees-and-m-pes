@@ -1,7 +1,13 @@
-import React, { Component, ErrorInfo, ReactNode } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { AlertTriangle, RefreshCw } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { AlertTriangle, RefreshCw } from "lucide-react";
+import React, { Component, type ErrorInfo, type ReactNode } from "react";
 
 interface Props {
   children: ReactNode;
@@ -23,13 +29,13 @@ export default class AppErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error('App Error Boundary caught an error:', error, errorInfo);
+    console.error("App Error Boundary caught an error:", error, errorInfo);
   }
 
   handleReset = () => {
     this.setState({ hasError: false, error: null });
     // Use hash-based navigation for canister-safe routing
-    window.location.hash = '#/';
+    window.location.hash = "#/";
     window.location.reload();
   };
 
@@ -46,7 +52,8 @@ export default class AppErrorBoundary extends Component<Props, State> {
                 <CardTitle className="text-2xl">Something went wrong</CardTitle>
               </div>
               <CardDescription>
-                The application encountered an unexpected error. This might be due to a network issue or a temporary problem with the service.
+                The application encountered an unexpected error. This might be
+                due to a network issue or a temporary problem with the service.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">

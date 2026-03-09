@@ -1,18 +1,24 @@
-import { useInternetIdentity } from '../hooks/useInternetIdentity';
-import { useGetAvailableBalance } from '../hooks/useCurrentUser';
-import { useGetDepositStatus } from '../hooks/useWallet';
-import { useGetUserBonuses } from '../hooks/useBonuses';
-import { useGetTradingFees } from '../hooks/useFees';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Wallet, TrendingUp, TrendingDown } from 'lucide-react';
-import DepositForm from '../components/wallet/DepositForm';
-import WithdrawForm from '../components/wallet/WithdrawForm';
-import RequestsHistory from '../components/wallet/RequestsHistory';
-import MpesaInstructionsCard from '../components/wallet/MpesaInstructionsCard';
-import AuthRequiredScreen from '../components/auth/AuthRequiredScreen';
-import { setIntendedPath } from '../utils/postLoginRedirect';
-import { useEffect } from 'react';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { TrendingDown, TrendingUp, Wallet } from "lucide-react";
+import { useEffect } from "react";
+import AuthRequiredScreen from "../components/auth/AuthRequiredScreen";
+import DepositForm from "../components/wallet/DepositForm";
+import MpesaInstructionsCard from "../components/wallet/MpesaInstructionsCard";
+import RequestsHistory from "../components/wallet/RequestsHistory";
+import WithdrawForm from "../components/wallet/WithdrawForm";
+import { useGetUserBonuses } from "../hooks/useBonuses";
+import { useGetAvailableBalance } from "../hooks/useCurrentUser";
+import { useGetTradingFees } from "../hooks/useFees";
+import { useInternetIdentity } from "../hooks/useInternetIdentity";
+import { useGetDepositStatus } from "../hooks/useWallet";
+import { setIntendedPath } from "../utils/postLoginRedirect";
 
 export default function WalletPage() {
   const { identity } = useInternetIdentity();
@@ -25,13 +31,13 @@ export default function WalletPage() {
 
   useEffect(() => {
     if (!isAuthenticated) {
-      setIntendedPath('/wallet');
+      setIntendedPath("/wallet");
     }
   }, [isAuthenticated]);
 
   if (!isAuthenticated) {
     return (
-      <AuthRequiredScreen 
+      <AuthRequiredScreen
         title="Login Required"
         description="You need to log in to access your wallet."
       />
@@ -44,13 +50,17 @@ export default function WalletPage() {
       <Card className="border-border/50 hover:border-primary/30 transition-colors shadow-premium">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <div>
-            <CardTitle className="text-sm font-medium">Available Balance</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Available Balance
+            </CardTitle>
             <CardDescription>Your current trading balance</CardDescription>
           </div>
           <Wallet className="h-8 w-8 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="text-4xl font-bold text-primary">${balance.toFixed(2)}</div>
+          <div className="text-4xl font-bold text-primary">
+            ${balance.toFixed(2)}
+          </div>
         </CardContent>
       </Card>
 
@@ -89,7 +99,9 @@ export default function WalletPage() {
       <Card className="border-border/50 shadow-premium">
         <CardHeader>
           <CardTitle>Transaction History</CardTitle>
-          <CardDescription>View your deposits, bonuses, and fees</CardDescription>
+          <CardDescription>
+            View your deposits, bonuses, and fees
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="all" className="w-full">
@@ -97,7 +109,11 @@ export default function WalletPage() {
               <TabsTrigger value="all">All Transactions</TabsTrigger>
             </TabsList>
             <TabsContent value="all" className="mt-4">
-              <RequestsHistory deposits={deposits} bonuses={bonuses} fees={fees} />
+              <RequestsHistory
+                deposits={deposits}
+                bonuses={bonuses}
+                fees={fees}
+              />
             </TabsContent>
           </Tabs>
         </CardContent>

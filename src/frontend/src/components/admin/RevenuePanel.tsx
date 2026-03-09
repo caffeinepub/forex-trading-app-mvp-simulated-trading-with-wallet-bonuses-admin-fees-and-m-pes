@@ -1,7 +1,23 @@
-import { useGetPlatformRevenue, useGetAllTradingFees } from '../../hooks/useFees';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { DollarSign } from 'lucide-react';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { DollarSign } from "lucide-react";
+import {
+  useGetAllTradingFees,
+  useGetPlatformRevenue,
+} from "../../hooks/useFees";
 
 export default function RevenuePanel() {
   const { data: revenue = 0 } = useGetPlatformRevenue();
@@ -19,10 +35,14 @@ export default function RevenuePanel() {
             <DollarSign className="w-5 h-5" />
             Total Platform Revenue
           </CardTitle>
-          <CardDescription>Total fees collected from trading activity</CardDescription>
+          <CardDescription>
+            Total fees collected from trading activity
+          </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="text-4xl font-bold text-primary">${revenue.toFixed(2)}</div>
+          <div className="text-4xl font-bold text-primary">
+            ${revenue.toFixed(2)}
+          </div>
         </CardContent>
       </Card>
 

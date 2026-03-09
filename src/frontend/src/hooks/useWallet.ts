@@ -1,25 +1,28 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useActor } from './useActor';
-import type { DepositRequest } from '../backend';
-import { toast } from 'sonner';
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+import type { DepositRequest } from "../backend";
+import { useActor } from "./useActor";
 
 export function useDepositFunds() {
   const { actor } = useActor();
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ amount, mpesaRef }: { amount: number; mpesaRef: string | null }) => {
-      if (!actor) throw new Error('Actor not available');
+    mutationFn: async ({
+      amount,
+      mpesaRef,
+    }: { amount: number; mpesaRef: string | null }) => {
+      if (!actor) throw new Error("Actor not available");
       return actor.depositFunds(amount, mpesaRef);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['depositStatus'] });
-      queryClient.invalidateQueries({ queryKey: ['availableBalance'] });
-      toast.success('Deposit request submitted successfully');
+      queryClient.invalidateQueries({ queryKey: ["depositStatus"] });
+      queryClient.invalidateQueries({ queryKey: ["availableBalance"] });
+      toast.success("Deposit request submitted successfully");
     },
     onError: (error: Error) => {
-      toast.error(error.message || 'Failed to submit deposit request');
-    }
+      toast.error(error.message || "Failed to submit deposit request");
+    },
   });
 }
 
@@ -29,20 +32,20 @@ export function useWithdrawFunds() {
 
   return useMutation({
     mutationFn: async (amount: number) => {
-      if (!actor) throw new Error('Actor not available');
+      if (!actor) throw new Error("Actor not available");
       return actor.withdrawFunds(amount);
     },
     onSuccess: (success) => {
       if (success) {
-        queryClient.invalidateQueries({ queryKey: ['availableBalance'] });
-        toast.success('Withdrawal processed successfully');
+        queryClient.invalidateQueries({ queryKey: ["availableBalance"] });
+        toast.success("Withdrawal processed successfully");
       } else {
-        toast.error('Insufficient funds for withdrawal');
+        toast.error("Insufficient funds for withdrawal");
       }
     },
     onError: (error: Error) => {
-      toast.error(error.message || 'Failed to process withdrawal');
-    }
+      toast.error(error.message || "Failed to process withdrawal");
+    },
   });
 }
 
@@ -50,7 +53,7 @@ export function useGetDepositStatus() {
   const { actor, isFetching } = useActor();
 
   return useQuery<DepositRequest[]>({
-    queryKey: ['depositStatus'],
+    queryKey: ["depositStatus"],
     queryFn: async () => {
       if (!actor) return [];
       return actor.getDepositStatus();
@@ -63,7 +66,7 @@ export function useGetAllDepositRequests() {
   const { actor, isFetching } = useActor();
 
   return useQuery<DepositRequest[]>({
-    queryKey: ['allDepositRequests'],
+    queryKey: ["allDepositRequests"],
     queryFn: async () => {
       if (!actor) return [];
       return actor.getAllDepositRequests();
@@ -76,9 +79,9 @@ export function useGetMpesaNumber() {
   const { actor, isFetching } = useActor();
 
   return useQuery<string>({
-    queryKey: ['mpesaNumber'],
+    queryKey: ["mpesaNumber"],
     queryFn: async () => {
-      if (!actor) throw new Error('Actor not available');
+      if (!actor) throw new Error("Actor not available");
       return actor.getMpesaNumber();
     },
     enabled: !!actor && !isFetching,
@@ -90,18 +93,21 @@ export function useApproveDeposit() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ requestId, adminNote }: { requestId: bigint; adminNote: string | null }) => {
-      if (!actor) throw new Error('Actor not available');
+    mutationFn: async ({
+      requestId,
+      adminNote,
+    }: { requestId: bigint; adminNote: string | null }) => {
+      if (!actor) throw new Error("Actor not available");
       return actor.approveDeposit(requestId, adminNote);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['allDepositRequests'] });
-      queryClient.invalidateQueries({ queryKey: ['depositStatus'] });
-      toast.success('Deposit approved successfully');
+      queryClient.invalidateQueries({ queryKey: ["allDepositRequests"] });
+      queryClient.invalidateQueries({ queryKey: ["depositStatus"] });
+      toast.success("Deposit approved successfully");
     },
     onError: (error: Error) => {
-      toast.error(error.message || 'Failed to approve deposit');
-    }
+      toast.error(error.message || "Failed to approve deposit");
+    },
   });
 }
 
@@ -110,17 +116,20 @@ export function useRejectDeposit() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ requestId, adminNote }: { requestId: bigint; adminNote: string | null }) => {
-      if (!actor) throw new Error('Actor not available');
+    mutationFn: async ({
+      requestId,
+      adminNote,
+    }: { requestId: bigint; adminNote: string | null }) => {
+      if (!actor) throw new Error("Actor not available");
       return actor.rejectDeposit(requestId, adminNote);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['allDepositRequests'] });
-      queryClient.invalidateQueries({ queryKey: ['depositStatus'] });
-      toast.success('Deposit rejected');
+      queryClient.invalidateQueries({ queryKey: ["allDepositRequests"] });
+      queryClient.invalidateQueries({ queryKey: ["depositStatus"] });
+      toast.success("Deposit rejected");
     },
     onError: (error: Error) => {
-      toast.error(error.message || 'Failed to reject deposit');
-    }
+      toast.error(error.message || "Failed to reject deposit");
+    },
   });
 }

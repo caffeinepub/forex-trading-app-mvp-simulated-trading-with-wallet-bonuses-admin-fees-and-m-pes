@@ -1,68 +1,76 @@
-import { RouterProvider, createRouter, createRoute, createRootRoute, createHashHistory, NotFoundRoute, useNavigate } from '@tanstack/react-router';
-import { useInternetIdentity } from './hooks/useInternetIdentity';
-import { useGetCallerUserProfile } from './hooks/useCurrentUser';
-import LandingPage from './pages/LandingPage';
-import TradingPage from './pages/TradingPage';
-import WalletPage from './pages/WalletPage';
-import AdminPage from './pages/AdminPage';
-import NotFoundPage from './pages/NotFoundPage';
-import AppLayout from './components/layout/AppLayout';
-import ProfileSetupDialog from './components/auth/ProfileSetupDialog';
-import AppErrorBoundary from './components/system/AppErrorBoundary';
-import { Toaster } from '@/components/ui/sonner';
-import { ThemeProvider } from 'next-themes';
-import { getIntendedPath, clearIntendedPath } from './utils/postLoginRedirect';
-import { useEffect } from 'react';
+import { Toaster } from "@/components/ui/sonner";
+import {
+  NotFoundRoute,
+  RouterProvider,
+  createHashHistory,
+  createRootRoute,
+  createRoute,
+  createRouter,
+  useNavigate,
+} from "@tanstack/react-router";
+import { ThemeProvider } from "next-themes";
+import { useEffect } from "react";
+import ProfileSetupDialog from "./components/auth/ProfileSetupDialog";
+import AppLayout from "./components/layout/AppLayout";
+import AppErrorBoundary from "./components/system/AppErrorBoundary";
+import { useGetCallerUserProfile } from "./hooks/useCurrentUser";
+import { useInternetIdentity } from "./hooks/useInternetIdentity";
+import AdminPage from "./pages/AdminPage";
+import LandingPage from "./pages/LandingPage";
+import NotFoundPage from "./pages/NotFoundPage";
+import TradingPage from "./pages/TradingPage";
+import WalletPage from "./pages/WalletPage";
+import { clearIntendedPath, getIntendedPath } from "./utils/postLoginRedirect";
 
 const rootRoute = createRootRoute({
-  component: AppLayout
+  component: AppLayout,
 });
 
 const indexRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/',
-  component: LandingPage
+  path: "/",
+  component: LandingPage,
 });
 
 const tradingRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/trading',
-  component: TradingPage
+  path: "/trading",
+  component: TradingPage,
 });
 
 const walletRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/wallet',
-  component: WalletPage
+  path: "/wallet",
+  component: WalletPage,
 });
 
 const adminRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/admin',
-  component: AdminPage
+  path: "/admin",
+  component: AdminPage,
 });
 
 const notFoundRoute = new NotFoundRoute({
   getParentRoute: () => rootRoute,
-  component: NotFoundPage
+  component: NotFoundPage,
 });
 
 const routeTree = rootRoute.addChildren([
   indexRoute,
   tradingRoute,
   walletRoute,
-  adminRoute
+  adminRoute,
 ]);
 
 const hashHistory = createHashHistory();
 
-const router = createRouter({ 
+const router = createRouter({
   routeTree,
   history: hashHistory,
-  notFoundRoute
+  notFoundRoute,
 });
 
-declare module '@tanstack/react-router' {
+declare module "@tanstack/react-router" {
   interface Register {
     router: typeof router;
   }
@@ -89,10 +97,15 @@ function PostLoginRedirect() {
 
 function AppContent() {
   const { identity } = useInternetIdentity();
-  const { data: userProfile, isLoading: profileLoading, isFetched } = useGetCallerUserProfile();
-  
+  const {
+    data: userProfile,
+    isLoading: profileLoading,
+    isFetched,
+  } = useGetCallerUserProfile();
+
   const isAuthenticated = !!identity;
-  const showProfileSetup = isAuthenticated && !profileLoading && isFetched && userProfile === null;
+  const showProfileSetup =
+    isAuthenticated && !profileLoading && isFetched && userProfile === null;
 
   return (
     <>

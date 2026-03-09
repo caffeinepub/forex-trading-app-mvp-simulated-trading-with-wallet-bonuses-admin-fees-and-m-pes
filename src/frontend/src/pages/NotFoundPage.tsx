@@ -1,7 +1,13 @@
-import { useNavigate } from '@tanstack/react-router';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Home, AlertCircle } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { useNavigate } from "@tanstack/react-router";
+import { AlertCircle, Home } from "lucide-react";
 
 export default function NotFoundPage() {
   const navigate = useNavigate();
@@ -21,7 +27,7 @@ export default function NotFoundPage() {
         <CardContent className="flex justify-center pb-8">
           <Button
             size="lg"
-            onClick={() => navigate({ to: '/' })}
+            onClick={() => navigate({ to: "/" })}
             className="gap-2"
           >
             <Home className="w-4 h-4" />

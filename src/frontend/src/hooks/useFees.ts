@@ -1,13 +1,13 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useActor } from './useActor';
-import type { TradingFee } from '../backend';
-import { toast } from 'sonner';
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+import type { TradingFee } from "../backend";
+import { useActor } from "./useActor";
 
 export function useGetTradingFees() {
   const { actor, isFetching } = useActor();
 
   return useQuery<TradingFee[]>({
-    queryKey: ['tradingFees'],
+    queryKey: ["tradingFees"],
     queryFn: async () => {
       if (!actor) return [];
       return actor.getTradingFees();
@@ -20,7 +20,7 @@ export function useGetAllTradingFees() {
   const { actor, isFetching } = useActor();
 
   return useQuery<TradingFee[]>({
-    queryKey: ['allTradingFees'],
+    queryKey: ["allTradingFees"],
     queryFn: async () => {
       if (!actor) return [];
       return actor.getAllTradingFees();
@@ -33,7 +33,7 @@ export function useGetPlatformRevenue() {
   const { actor, isFetching } = useActor();
 
   return useQuery<number>({
-    queryKey: ['platformRevenue'],
+    queryKey: ["platformRevenue"],
     queryFn: async () => {
       if (!actor) return 0;
       return actor.getPlatformRevenue();
@@ -47,17 +47,20 @@ export function useSubmitTradingFee() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ tradeId, amount }: { tradeId: bigint; amount: number }) => {
-      if (!actor) throw new Error('Actor not available');
+    mutationFn: async ({
+      tradeId,
+      amount,
+    }: { tradeId: bigint; amount: number }) => {
+      if (!actor) throw new Error("Actor not available");
       return actor.submitTradingFee(tradeId, amount);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['tradingFees'] });
-      queryClient.invalidateQueries({ queryKey: ['allTradingFees'] });
-      queryClient.invalidateQueries({ queryKey: ['platformRevenue'] });
+      queryClient.invalidateQueries({ queryKey: ["tradingFees"] });
+      queryClient.invalidateQueries({ queryKey: ["allTradingFees"] });
+      queryClient.invalidateQueries({ queryKey: ["platformRevenue"] });
     },
     onError: (error: Error) => {
-      toast.error(error.message || 'Failed to submit trading fee');
-    }
+      toast.error(error.message || "Failed to submit trading fee");
+    },
   });
 }

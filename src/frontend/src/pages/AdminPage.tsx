@@ -1,18 +1,24 @@
-import { useInternetIdentity } from '../hooks/useInternetIdentity';
-import { useIsCallerAdmin } from '../hooks/useCurrentUser';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Shield, DollarSign, TrendingUp, Users, Gift } from 'lucide-react';
-import DepositRequestsReview from '../components/admin/DepositRequestsReview';
-import BonusManagement from '../components/admin/BonusManagement';
-import RevenuePanel from '../components/admin/RevenuePanel';
-import TradingStatsPanel from '../components/admin/TradingStatsPanel';
-import UserDirectory from '../components/admin/UserDirectory';
-import AccessDeniedScreen from '../components/auth/AccessDeniedScreen';
-import AuthRequiredScreen from '../components/auth/AuthRequiredScreen';
-import CenteredLoadingCard from '../components/system/CenteredLoadingCard';
-import { setIntendedPath } from '../utils/postLoginRedirect';
-import { useEffect } from 'react';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { DollarSign, Gift, Shield, TrendingUp, Users } from "lucide-react";
+import { useEffect } from "react";
+import BonusManagement from "../components/admin/BonusManagement";
+import DepositRequestsReview from "../components/admin/DepositRequestsReview";
+import RevenuePanel from "../components/admin/RevenuePanel";
+import TradingStatsPanel from "../components/admin/TradingStatsPanel";
+import UserDirectory from "../components/admin/UserDirectory";
+import AccessDeniedScreen from "../components/auth/AccessDeniedScreen";
+import AuthRequiredScreen from "../components/auth/AuthRequiredScreen";
+import CenteredLoadingCard from "../components/system/CenteredLoadingCard";
+import { useIsCallerAdmin } from "../hooks/useCurrentUser";
+import { useInternetIdentity } from "../hooks/useInternetIdentity";
+import { setIntendedPath } from "../utils/postLoginRedirect";
 
 export default function AdminPage() {
   const { identity } = useInternetIdentity();
@@ -22,13 +28,13 @@ export default function AdminPage() {
 
   useEffect(() => {
     if (!isAuthenticated) {
-      setIntendedPath('/admin');
+      setIntendedPath("/admin");
     }
   }, [isAuthenticated]);
 
   if (!isAuthenticated) {
     return (
-      <AuthRequiredScreen 
+      <AuthRequiredScreen
         title="Admin Login Required"
         description="You need to log in to access the admin dashboard."
       />
@@ -54,7 +60,9 @@ export default function AdminPage() {
             </div>
             <div>
               <CardTitle className="text-2xl">Admin Dashboard</CardTitle>
-              <CardDescription>Manage platform operations and user accounts</CardDescription>
+              <CardDescription>
+                Manage platform operations and user accounts
+              </CardDescription>
             </div>
           </div>
         </CardHeader>
@@ -89,7 +97,9 @@ export default function AdminPage() {
           <Card className="border-border/50 shadow-premium">
             <CardHeader>
               <CardTitle>Deposit Requests</CardTitle>
-              <CardDescription>Review and approve pending deposit requests</CardDescription>
+              <CardDescription>
+                Review and approve pending deposit requests
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <DepositRequestsReview />
@@ -113,7 +123,9 @@ export default function AdminPage() {
           <Card className="border-border/50 shadow-premium">
             <CardHeader>
               <CardTitle>Platform Revenue</CardTitle>
-              <CardDescription>View total revenue and recent fees</CardDescription>
+              <CardDescription>
+                View total revenue and recent fees
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <RevenuePanel />

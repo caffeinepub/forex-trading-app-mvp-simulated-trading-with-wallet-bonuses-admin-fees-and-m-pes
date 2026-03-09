@@ -1,7 +1,8 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useActor } from './useActor';
-import type { TradePosition, TradeDirection } from '../backend';
-import { toast } from 'sonner';
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+import type { TradeDirection, TradePosition } from "../backend";
+import { normalizeTradeError } from "../utils/canisterError";
+import { useActor } from "./useActor";
 
 export function useOpenTrade() {
   const { actor } = useActor();
@@ -12,25 +13,26 @@ export function useOpenTrade() {
       pairSymbol,
       direction,
       leverage,
-      margin
+      margin,
     }: {
       pairSymbol: string;
       direction: TradeDirection;
       leverage: bigint;
       margin: number;
     }) => {
-      if (!actor) throw new Error('Actor not available');
+      if (!actor) throw new Error("Actor not available");
       return actor.openTrade(pairSymbol, direction, leverage, margin);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['openTrades'] });
-      queryClient.invalidateQueries({ queryKey: ['tradeHistory'] });
-      queryClient.invalidateQueries({ queryKey: ['availableBalance'] });
-      toast.success('Trade opened successfully');
+      queryClient.invalidateQueries({ queryKey: ["openTrades"] });
+      queryClient.invalidateQueries({ queryKey: ["tradeHistory"] });
+      queryClient.invalidateQueries({ queryKey: ["availableBalance"] });
+      toast.success("Trade opened successfully");
     },
-    onError: (error: Error) => {
-      toast.error(error.message || 'Failed to open trade');
-    }
+    onError: (error: unknown) => {
+      const userMessage = normalizeTradeError(error);
+      toast.error(userMessage);
+    },
   });
 }
 
@@ -40,18 +42,19 @@ export function useCloseTrade() {
 
   return useMutation({
     mutationFn: async (tradeId: bigint) => {
-      if (!actor) throw new Error('Actor not available');
+      if (!actor) throw new Error("Actor not available");
       return actor.closeTrade(tradeId);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['openTrades'] });
-      queryClient.invalidateQueries({ queryKey: ['tradeHistory'] });
-      queryClient.invalidateQueries({ queryKey: ['availableBalance'] });
-      toast.success('Trade closed successfully');
+      queryClient.invalidateQueries({ queryKey: ["openTrades"] });
+      queryClient.invalidateQueries({ queryKey: ["tradeHistory"] });
+      queryClient.invalidateQueries({ queryKey: ["availableBalance"] });
+      toast.success("Trade closed successfully");
     },
-    onError: (error: Error) => {
-      toast.error(error.message || 'Failed to close trade');
-    }
+    onError: (error: unknown) => {
+      const userMessage = normalizeTradeError(error);
+      toast.error(userMessage);
+    },
   });
 }
 
@@ -59,7 +62,7 @@ export function useGetOpenTrades() {
   const { actor, isFetching } = useActor();
 
   return useQuery<TradePosition[]>({
-    queryKey: ['openTrades'],
+    queryKey: ["openTrades"],
     queryFn: async () => {
       if (!actor) return [];
       return actor.getOpenTrades();
@@ -72,7 +75,7 @@ export function useGetTradeHistory() {
   const { actor, isFetching } = useActor();
 
   return useQuery<TradePosition[]>({
-    queryKey: ['tradeHistory'],
+    queryKey: ["tradeHistory"],
     queryFn: async () => {
       if (!actor) return [];
       return actor.getTradeHistory();
@@ -85,7 +88,7 @@ export function useGetAllTrades() {
   const { actor, isFetching } = useActor();
 
   return useQuery<TradePosition[]>({
-    queryKey: ['allTrades'],
+    queryKey: ["allTrades"],
     queryFn: async () => {
       if (!actor) return [];
       return actor.getAllTrades();

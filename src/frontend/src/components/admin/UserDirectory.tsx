@@ -1,11 +1,24 @@
-import { useGetAllTrades } from '../../hooks/useTrading';
-import { useGetAllDepositRequests } from '../../hooks/useWallet';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
-import { Users } from 'lucide-react';
-import { useState } from 'react';
-import UserInspector from './UserInspector';
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Users } from "lucide-react";
+import { useState } from "react";
+import { useGetAllTrades } from "../../hooks/useTrading";
+import { useGetAllDepositRequests } from "../../hooks/useWallet";
+import UserInspector from "./UserInspector";
 
 export default function UserDirectory() {
   const { data: allTrades = [] } = useGetAllTrades();
@@ -14,8 +27,8 @@ export default function UserDirectory() {
 
   // Derive unique users from all data sources
   const userPrincipals = new Set<string>();
-  allTrades.forEach(t => userPrincipals.add(t.user.toString()));
-  allDeposits.forEach(d => userPrincipals.add(d.user.toString()));
+  for (const t of allTrades) userPrincipals.add(t.user.toString());
+  for (const d of allDeposits) userPrincipals.add(d.user.toString());
 
   const users = Array.from(userPrincipals);
 
@@ -56,9 +69,13 @@ export default function UserDirectory() {
             </TableHeader>
             <TableBody>
               {users.map((principal) => {
-                const userTrades = allTrades.filter(t => t.user.toString() === principal);
-                const userDeposits = allDeposits.filter(d => d.user.toString() === principal);
-                
+                const userTrades = allTrades.filter(
+                  (t) => t.user.toString() === principal,
+                );
+                const userDeposits = allDeposits.filter(
+                  (d) => d.user.toString() === principal,
+                );
+
                 return (
                   <TableRow key={principal}>
                     <TableCell className="font-mono text-xs">

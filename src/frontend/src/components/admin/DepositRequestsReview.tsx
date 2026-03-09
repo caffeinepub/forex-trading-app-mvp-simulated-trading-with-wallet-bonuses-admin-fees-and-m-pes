@@ -1,23 +1,48 @@
-import { useState } from 'react';
-import { useGetAllDepositRequests, useApproveDeposit, useRejectDeposit } from '../../hooks/useWallet';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Check, X } from 'lucide-react';
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Check, X } from "lucide-react";
+import { useState } from "react";
+import {
+  useApproveDeposit,
+  useGetAllDepositRequests,
+  useRejectDeposit,
+} from "../../hooks/useWallet";
 
 export default function DepositRequestsReview() {
   const { data: requests = [] } = useGetAllDepositRequests();
   const approveMutation = useApproveDeposit();
   const rejectMutation = useRejectDeposit();
-  
-  const [selectedRequest, setSelectedRequest] = useState<any>(null);
-  const [adminNote, setAdminNote] = useState('');
 
-  const pendingRequests = requests.filter(r => Object.keys(r.status)[0] === 'pending');
+  const [selectedRequest, setSelectedRequest] = useState<any>(null);
+  const [adminNote, setAdminNote] = useState("");
+
+  const pendingRequests = requests.filter(
+    (r) => Object.keys(r.status)[0] === "pending",
+  );
 
   const formatDate = (timestamp: bigint) => {
     return new Date(Number(timestamp) / 1000000).toLocaleString();
@@ -36,7 +61,7 @@ export default function DepositRequestsReview() {
     if (selectedRequest) {
       approveMutation.mutate(
         { requestId: selectedRequest.requestId, adminNote: adminNote || null },
-        { onSuccess: () => setSelectedRequest(null) }
+        { onSuccess: () => setSelectedRequest(null) },
       );
     }
   };
@@ -45,7 +70,7 @@ export default function DepositRequestsReview() {
     if (selectedRequest) {
       rejectMutation.mutate(
         { requestId: selectedRequest.requestId, adminNote: adminNote || null },
-        { onSuccess: () => setSelectedRequest(null) }
+        { onSuccess: () => setSelectedRequest(null) },
       );
     }
   };
@@ -55,7 +80,9 @@ export default function DepositRequestsReview() {
       <Card>
         <CardHeader>
           <CardTitle>Pending Deposit Requests</CardTitle>
-          <CardDescription>Review and approve or reject deposit requests</CardDescription>
+          <CardDescription>
+            Review and approve or reject deposit requests
+          </CardDescription>
         </CardHeader>
         <CardContent>
           {pendingRequests.length === 0 ? (
@@ -75,18 +102,24 @@ export default function DepositRequestsReview() {
               </TableHeader>
               <TableBody>
                 {pendingRequests.map((request) => {
-                  const mpesaDetails = parseMpesaDetails(request.mpesaReference);
+                  const mpesaDetails = parseMpesaDetails(
+                    request.mpesaReference,
+                  );
                   return (
                     <TableRow key={request.requestId.toString()}>
                       <TableCell className="font-mono text-xs">
                         {request.user.toString().slice(0, 8)}...
                       </TableCell>
-                      <TableCell className="font-medium">${request.amount.toFixed(2)}</TableCell>
+                      <TableCell className="font-medium">
+                        ${request.amount.toFixed(2)}
+                      </TableCell>
                       <TableCell>
                         {mpesaDetails ? (
                           <div className="text-sm">
-                            <div>Phone: {mpesaDetails.phone || 'N/A'}</div>
-                            <div className="text-muted-foreground">Ref: {mpesaDetails.reference || 'N/A'}</div>
+                            <div>Phone: {mpesaDetails.phone || "N/A"}</div>
+                            <div className="text-muted-foreground">
+                              Ref: {mpesaDetails.reference || "N/A"}
+                            </div>
                           </div>
                         ) : (
                           <span className="text-muted-foreground">-</span>
@@ -102,7 +135,7 @@ export default function DepositRequestsReview() {
                             variant="default"
                             onClick={() => {
                               setSelectedRequest(request);
-                              setAdminNote('');
+                              setAdminNote("");
                             }}
                           >
                             <Check className="w-4 h-4" />
@@ -112,7 +145,7 @@ export default function DepositRequestsReview() {
                             variant="destructive"
                             onClick={() => {
                               setSelectedRequest(request);
-                              setAdminNote('');
+                              setAdminNote("");
                             }}
                           >
                             <X className="w-4 h-4" />
@@ -128,7 +161,10 @@ export default function DepositRequestsReview() {
         </CardContent>
       </Card>
 
-      <Dialog open={!!selectedRequest} onOpenChange={() => setSelectedRequest(null)}>
+      <Dialog
+        open={!!selectedRequest}
+        onOpenChange={() => setSelectedRequest(null)}
+      >
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Review Deposit Request</DialogTitle>

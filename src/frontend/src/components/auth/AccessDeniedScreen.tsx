@@ -1,7 +1,13 @@
-import { useNavigate } from '@tanstack/react-router';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ShieldAlert } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { useNavigate } from "@tanstack/react-router";
+import { ShieldAlert } from "lucide-react";
 
 export default function AccessDeniedScreen() {
   const navigate = useNavigate();
@@ -19,7 +25,7 @@ export default function AccessDeniedScreen() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Button onClick={() => navigate({ to: '/' })} className="w-full">
+          <Button onClick={() => navigate({ to: "/" })} className="w-full">
             Return to Home
           </Button>
         </CardContent>
